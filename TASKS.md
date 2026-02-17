@@ -115,7 +115,7 @@ flowchart TD
 
 ## P1-R1: Auth Resource
 
-### [ ] P1-R1-T1: Auth API 구현
+### [x] P1-R1-T1: Auth API 구현
 - **담당**: backend-specialist
 - **리소스**: users
 - **엔드포인트**:
@@ -135,7 +135,7 @@ flowchart TD
 
 ## P1-S0: 공통 레이아웃
 
-### [ ] P1-S0-T1: 공통 레이아웃 구현
+### [x] P1-S0-T1: 공통 레이아웃 구현
 - **담당**: frontend-specialist
 - **화면**: 전체 (dashboard 레이아웃)
 - **컴포넌트**:
@@ -156,7 +156,7 @@ flowchart TD
 > 화면: /login
 > 데이터 요구: users
 
-### [ ] P1-S1-T1: 로그인 UI 구현
+### [x] P1-S1-T1: 로그인 UI 구현
 - **담당**: frontend-specialist
 - **화면**: /login
 - **컴포넌트**:
@@ -171,7 +171,7 @@ flowchart TD
 - **데모 상태**: normal, error, loading
 - **의존**: P1-R1-T1, P1-S0-T1
 
-### [ ] P1-S1-T2: 로그인 통합 테스트
+### [x] P1-S1-T2: 로그인 통합 테스트
 - **담당**: test-specialist
 - **화면**: /login
 - **시나리오**:
@@ -183,14 +183,14 @@ flowchart TD
 - **파일**: `frontend/tests/e2e/login.spec.ts`
 - **Worktree**: `worktree/phase-1-auth`
 
-### [ ] P1-S1-V: 로그인 연결점 검증
+### [x] P1-S1-V: 로그인 연결점 검증
 - **담당**: test-specialist
 - **화면**: /login
 - **검증 항목**:
-  - [ ] Endpoint: POST /api/v1/auth/login 응답 정상
-  - [ ] Navigation: LoginForm 성공 → /dashboard 라우트 존재
-  - [ ] Navigation: SignupLink → /signup 라우트 존재
-  - [ ] Auth: JWT 토큰 저장/갱신 동작
+  - [x] Endpoint: POST /api/v1/auth/login 응답 정상
+  - [x] Navigation: LoginForm 성공 → /dashboard 라우트 존재
+  - [x] Navigation: SignupLink → /signup 라우트 존재
+  - [x] Auth: JWT 토큰 저장/갱신 동작
 
 ---
 
@@ -199,7 +199,7 @@ flowchart TD
 > 화면: /signup
 > 데이터 요구: users
 
-### [ ] P1-S2-T1: 회원가입 UI 구현
+### [x] P1-S2-T1: 회원가입 UI 구현
 - **담당**: frontend-specialist
 - **화면**: /signup
 - **컴포넌트**:
@@ -214,13 +214,13 @@ flowchart TD
 - **데모 상태**: normal, error, loading
 - **의존**: P1-R1-T1, P1-S0-T1
 
-### [ ] P1-S2-V: 회원가입 연결점 검증
+### [x] P1-S2-V: 회원가입 연결점 검증
 - **담당**: test-specialist
 - **화면**: /signup
 - **검증 항목**:
-  - [ ] Endpoint: POST /api/v1/auth/signup 응답 정상
-  - [ ] Navigation: SignupForm 성공 → /dashboard 라우트 존재
-  - [ ] Navigation: LoginLink → /login 라우트 존재
+  - [x] Endpoint: POST /api/v1/auth/register 응답 정상
+  - [x] Navigation: SignupForm 성공 → /dashboard 라우트 존재
+  - [x] Navigation: LoginLink → /login 라우트 존재
 
 ---
 

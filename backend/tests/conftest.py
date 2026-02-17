@@ -12,6 +12,8 @@ from datetime import datetime
 
 import pytest
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy import JSON, event
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.pool import StaticPool
 
@@ -20,6 +22,29 @@ from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
 from app.models.user import User
+
+
+# ---------------------------------------------------------------------------
+# SQLite compatibility: JSONB -> JSON mapping
+# ---------------------------------------------------------------------------
+
+@event.listens_for(Base.metadata, "column_reflect")
+def _map_jsonb_to_json(inspector, table, column_info):
+    if isinstance(column_info.get("type"), JSONB):
+        column_info["type"] = JSON()
+
+
+# Monkey-patch JSONB columns in metadata for SQLite create_all
+_orig_jsonb_compile = None
+
+
+def _setup_jsonb_for_sqlite():
+    """Register a compilation extension so JSONB renders as JSON on SQLite."""
+    from sqlalchemy.ext.compiler import compiles
+
+    @compiles(JSONB, "sqlite")
+    def _compile_jsonb_sqlite(type_, compiler, **kw):
+        return "JSON"
 
 
 # ---------------------------------------------------------------------------
@@ -37,6 +62,7 @@ def anyio_backend():
 @pytest.fixture
 async def db_engine():
     """Create an in-memory SQLite engine for each test session."""
+    _setup_jsonb_for_sqlite()
     engine = create_async_engine(
         TEST_DATABASE_URL,
         connect_args={"check_same_thread": False},
