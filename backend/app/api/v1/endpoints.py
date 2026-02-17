@@ -3,9 +3,13 @@
 """API v1 router that aggregates all endpoint routers."""
 from fastapi import APIRouter
 
-from app.api.v1 import auth, users
+from app.api.v1 import agents, auth, dashboard, teams, templates, users
 
 api_v1_router = APIRouter(prefix="/api/v1")
 
 api_v1_router.include_router(auth.router)
 api_v1_router.include_router(users.router)
+api_v1_router.include_router(dashboard.router)
+api_v1_router.include_router(teams.router)
+api_v1_router.include_router(templates.router)
+api_v1_router.include_router(agents.router)

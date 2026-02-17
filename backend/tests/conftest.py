@@ -22,6 +22,7 @@ from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
 from app.models.user import User
+from app.models.team import Team
 
 
 # ---------------------------------------------------------------------------
@@ -135,3 +136,58 @@ async def auth_headers(test_user: User) -> dict:
     """Return Authorization headers with a valid JWT for test_user."""
     token = create_access_token(subject=test_user.id)
     return {"Authorization": f"Bearer {token}"}
+
+
+# ---------------------------------------------------------------------------
+# Team helper fixtures
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+async def test_team(db_session: AsyncSession, test_user: User) -> Team:
+    """Create and persist a test team owned by test_user."""
+    team = Team(
+        id=str(uuid.uuid4()),
+        user_id=test_user.id,
+        name="Test Team",
+        description="A test team for agents",
+        config={},
+        status="active",
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow(),
+    )
+    db_session.add(team)
+    await db_session.commit()
+    await db_session.refresh(team)
+    return team
+
+
+@pytest.fixture
+async def test_team_other_user(db_session: AsyncSession) -> Team:
+    """Create a team owned by a different user (not test_user)."""
+    other_user = User(
+        id=str(uuid.uuid4()),
+        email="other@example.com",
+        password_hash=get_password_hash("otherpassword123"),
+        name="Other User",
+        plan="free",
+        api_usage_count=0,
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow(),
+    )
+    db_session.add(other_user)
+    await db_session.commit()
+
+    team = Team(
+        id=str(uuid.uuid4()),
+        user_id=other_user.id,
+        name="Other Team",
+        description="Team owned by another user",
+        config={},
+        status="active",
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow(),
+    )
+    db_session.add(team)
+    await db_session.commit()
+    await db_session.refresh(team)
+    return team
