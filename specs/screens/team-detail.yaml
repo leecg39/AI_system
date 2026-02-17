@@ -1,0 +1,106 @@
+version: "2.0"
+
+screen:
+  name: 팀 상세
+  route: /teams/:id
+  layout: dashboard
+  auth: true
+
+data_requirements:
+  - resource: teams
+    needs: [id, name, description, config, status]
+    filters: { id: ":id" }
+    auth_required: true
+
+  - resource: agents
+    needs: [id, name, role, layer, model, status]
+    filters: { team_id: ":id" }
+    auth_required: true
+
+  - resource: tasks
+    needs: [id, type, status, created_at]
+    filters: { team_id: ":id", limit: 5 }
+    auth_required: true
+
+components:
+  - id: team_header
+    type: detail
+    position: main
+    function: 팀 이름, 설명, 상태 표시
+    data_source:
+      resource: teams
+    events:
+      - on: click:edit
+        do: 팀 편집 모달 열기
+
+  - id: agent_org_chart
+    type: chart
+    position: main
+    function: 팀 내부 에이전트 계층 조직도 (Orchestration/Research/Execution/Quality)
+    data_source:
+      resource: agents
+    events:
+      - on: click:agent_node
+        do: 에이전트 상세 사이드 패널 열기
+
+  - id: agent_detail_panel
+    type: drawer
+    position: overlay
+    function: 에이전트 상세 정보 (이름, 역할, 모델, 프롬프트)
+    data_source:
+      resource: agents
+    events:
+      - on: click:close
+        do: 패널 닫기
+
+  - id: recent_tasks_list
+    type: list
+    position: main
+    function: 최근 작업 3-5개 미니 리스트
+    data_source:
+      resource: tasks
+    events:
+      - on: click:task
+        do: /tasks/:id/results로 이동
+
+  - id: new_task_button
+    type: button
+    position: main
+    function: 새 작업 요청 버튼
+    events:
+      - on: click
+        do: /teams/:id/tasks/new로 이동
+
+connections:
+  navigations:
+    - from: new_task_button
+      to: /teams/:id/tasks/new
+    - from: recent_tasks_list
+      to: /tasks/:id/results
+
+  shared_components:
+    - sidebar_navigation
+    - header
+
+tests:
+  - name: 초기 로드
+    when: /teams/:id 접속
+    then:
+      - 팀 이름/설명 표시
+      - 에이전트 조직도 렌더링
+      - 최근 작업 리스트 표시
+
+  - name: 에이전트 노드 클릭
+    when: blog_writer 에이전트 노드 클릭
+    then:
+      - 사이드 패널에 에이전트 상세 정보 표시
+
+  - name: 새 작업 요청
+    when: "새 작업 요청" 버튼 클릭
+    then:
+      - /teams/:id/tasks/new로 이동
+
+  - name: 팀 편집
+    when: 팀 설정 버튼 클릭
+    then:
+      - 팀 편집 모달 표시

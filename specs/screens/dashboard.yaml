@@ -1,0 +1,79 @@
+version: "2.0"
+
+screen:
+  name: 홈 - 조직도 뷰
+  route: /dashboard
+  layout: dashboard
+  auth: true
+
+data_requirements:
+  - resource: teams
+    needs: [id, name, config, status, agent_count, recent_task_count]
+    auth_required: true
+
+  - resource: dashboard_stats
+    needs: [running_tasks, completed_tasks_today, total_teams]
+    auth_required: true
+
+components:
+  - id: stats_summary
+    type: stat-card
+    position: main
+    function: 오늘의 요약 표시 (진행중 작업, 완료 작업, 전체 팀)
+    data_source:
+      resource: dashboard_stats
+    events:
+      - on: click:stat
+        do: 해당 상세 화면으로 이동
+
+  - id: team_org_chart
+    type: chart
+    position: main
+    function: 전체 팀 조직도 인터랙티브 뷰 (React Flow 기반)
+    data_source:
+      resource: teams
+    events:
+      - on: click:team_node
+        do: /teams/:id로 이동
+      - on: zoom
+        do: 줌 인/아웃
+      - on: pan
+        do: 캔버스 패닝
+
+  - id: create_team_button
+    type: button
+    position: main
+    function: 새 팀 만들기 버튼
+    events:
+      - on: click
+        do: /teams/new로 이동
+
+connections:
+  navigations:
+    - from: team_org_chart
+      to: /teams/:id
+    - from: create_team_button
+      to: /teams/new
+
+  shared_components:
+    - sidebar_navigation
+    - header
+
+tests:
+  - name: 초기 로드
+    when: 로그인 후 /dashboard 접속
+    then:
+      - 오늘의 요약 카드 표시
+      - 팀 조직도 렌더링
+      - 새 팀 만들기 버튼 표시
+
+  - name: 팀 노드 클릭
+    when: 마케팅 팀 노드 클릭
+    then:
+      - /teams/:id로 이동
+
+  - name: 빈 상태
+    when: 팀이 없는 상태로 접속
+    then:
+      - "첫 번째 AI 팀을 만들어보세요" 안내 표시
+      - 새 팀 만들기 버튼 강조

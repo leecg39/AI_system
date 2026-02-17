@@ -1,0 +1,92 @@
+version: "2.0"
+
+screen:
+  name: 작업 요청
+  route: /teams/:id/tasks/new
+  layout: dashboard
+  auth: true
+
+data_requirements:
+  - resource: teams
+    needs: [id, name, config]
+    filters: { id: ":id" }
+    auth_required: true
+
+  - resource: agents
+    needs: [id, name, role]
+    filters: { team_id: ":id" }
+    auth_required: true
+
+components:
+  - id: step_indicator
+    type: stepper
+    position: main
+    function: 3단계 진행 표시 (옵션 선택 / 입력 / 확인)
+    events:
+      - on: click:step
+        do: 완료된 단계로 이동
+
+  - id: step1_options
+    type: form
+    position: main
+    function: 작업 유형/옵션 선택 (팀별 맞춤 - 체크박스/라디오)
+    data_source:
+      resource: teams
+    events:
+      - on: click:next
+        do: Step 2로 이동
+
+  - id: step2_input
+    type: form
+    position: main
+    function: URL 입력 / 텍스트 입력 / 파일 업로드 + 추가 지시사항
+    events:
+      - on: submit:url
+        do: URL 유효성 검사
+      - on: upload:file
+        do: 파일 업로드 처리
+      - on: click:next
+        do: Step 3로 이동
+
+  - id: step3_confirm
+    type: detail
+    position: main
+    function: 선택 옵션 요약 + 실행 버튼
+    events:
+      - on: click:execute
+        do: 작업 생성 API 호출, /tasks/:id/monitor로 이동
+      - on: click:back
+        do: 이전 단계로 이동
+
+connections:
+  navigations:
+    - from: step3_confirm
+      to: /tasks/:id/monitor
+
+  shared_components:
+    - sidebar_navigation
+    - header
+
+tests:
+  - name: 단계별 진행
+    when: Step 1 옵션 선택 후 다음 클릭
+    then:
+      - Step 2 입력 화면 표시
+      - 스텝 인디케이터 업데이트
+
+  - name: URL 입력 작업 요청
+    when: YouTube URL 입력 후 실행 클릭
+    then:
+      - 작업 생성
+      - /tasks/:id/monitor로 이동
+
+  - name: 파일 업로드
+    when: PDF 파일 업로드
+    then:
+      - 파일 미리보기 표시
+      - 다음 단계 버튼 활성화
+
+  - name: 옵션 요약
+    when: Step 3 도달
+    then:
+      - 선택한 모든 옵션 요약 표시

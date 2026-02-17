@@ -1,0 +1,82 @@
+version: "2.0"
+
+screen:
+  name: 설정
+  route: /settings
+  layout: dashboard
+  auth: true
+
+data_requirements:
+  - resource: users
+    needs: [id, email, name, plan, api_usage_count]
+    auth_required: true
+
+components:
+  - id: profile_section
+    type: form
+    position: main
+    function: 프로필 편집 (이름, 이메일)
+    data_source:
+      resource: users
+    events:
+      - on: submit
+        do: 프로필 업데이트 API 호출
+
+  - id: api_key_section
+    type: form
+    position: main
+    function: Claude API 키 입력/수정
+    events:
+      - on: submit
+        do: API 키 저장 (암호화)
+
+  - id: subscription_section
+    type: detail
+    position: main
+    function: 현재 플랜 표시, 사용량, 업그레이드 버튼
+    data_source:
+      resource: users
+    events:
+      - on: click:upgrade
+        do: 플랜 업그레이드 모달 열기
+
+  - id: notification_section
+    type: form
+    position: main
+    function: 알림 설정 (작업 완료 알림 ON/OFF)
+    events:
+      - on: toggle:notification
+        do: 알림 설정 업데이트
+
+  - id: data_management_section
+    type: detail
+    position: main
+    function: 데이터 관리 (작업 이력 내보내기/삭제)
+    events:
+      - on: click:export
+        do: 작업 이력 CSV 내보내기
+      - on: click:delete
+        do: 삭제 확인 모달 → 이력 삭제
+
+connections:
+  shared_components:
+    - sidebar_navigation
+    - header
+
+tests:
+  - name: 프로필 수정
+    when: 이름 변경 후 저장 클릭
+    then:
+      - 프로필 업데이트 성공 토스트 표시
+
+  - name: API 키 저장
+    when: Claude API 키 입력 후 저장
+    then:
+      - 키 마스킹 표시 (sk-***...)
+      - 저장 성공 확인
+
+  - name: 사용량 확인
+    when: 설정 페이지 접속
+    then:
+      - 현재 플랜 표시
+      - API 사용량 표시

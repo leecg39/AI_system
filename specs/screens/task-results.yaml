@@ -1,0 +1,97 @@
+version: "2.0"
+
+screen:
+  name: 결과물 미리보기
+  route: /tasks/:id/results
+  layout: dashboard
+  auth: true
+
+data_requirements:
+  - resource: tasks
+    needs: [id, type, status, created_at, completed_at]
+    filters: { id: ":id" }
+    auth_required: true
+
+  - resource: task_results
+    needs: [id, result_type, content, file_url, quality_score, version, metadata]
+    filters: { task_id: ":id" }
+    auth_required: true
+
+components:
+  - id: result_tabs
+    type: tabs
+    position: main
+    function: 결과물 유형별 탭 (블로그/SNS/뉴스레터 등)
+    data_source:
+      resource: task_results
+    events:
+      - on: click:tab
+        do: 해당 유형 결과물 표시
+
+  - id: result_content
+    type: detail
+    position: main
+    function: 텍스트 콘텐츠 렌더링 + 파일 미리보기
+    data_source:
+      resource: task_results
+    events:
+      - on: click:download
+        do: 개별 결과물 다운로드
+
+  - id: result_metadata
+    type: detail
+    position: main
+    function: 결과 메타데이터 (생성 시간, 사용 모델, 품질 점수)
+    data_source:
+      resource: task_results
+    events: []
+
+  - id: revision_form
+    type: form
+    position: main
+    function: 수정 요청 입력 ("이 부분을 수정해줘")
+    events:
+      - on: submit
+        do: 수정 작업 생성 → /tasks/:newId/monitor로 이동
+
+  - id: download_all_button
+    type: button
+    position: main
+    function: 전체 다운로드 버튼
+    events:
+      - on: click
+        do: 모든 결과물 ZIP 다운로드
+
+connections:
+  navigations:
+    - from: revision_form
+      to: /tasks/:id/monitor
+    - from: result_content
+      to: /dashboard
+
+  shared_components:
+    - sidebar_navigation
+    - header
+
+tests:
+  - name: 초기 로드
+    when: /tasks/:id/results 접속
+    then:
+      - 결과물 유형별 탭 표시
+      - 첫 번째 탭 콘텐츠 렌더링
+
+  - name: 수정 요청
+    when: 수정 사항 입력 후 "수정 요청" 클릭
+    then:
+      - 새 작업 생성
+      - /tasks/:newId/monitor로 이동
+
+  - name: 다운로드
+    when: 전체 다운로드 버튼 클릭
+    then:
+      - ZIP 파일 다운로드 시작
+
+  - name: 품질 점수 표시
+    when: QA 에이전트 결과 포함
+    then:
+      - 품질 점수 뱃지 표시

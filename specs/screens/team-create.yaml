@@ -1,0 +1,90 @@
+version: "2.0"
+
+screen:
+  name: 팀 생성
+  route: /teams/new
+  layout: dashboard
+  auth: true
+
+data_requirements:
+  - resource: team_templates
+    needs: [id, name, description, category, icon, default_agents]
+    auth_required: true
+
+components:
+  - id: step_indicator
+    type: stepper
+    position: main
+    function: 3단계 진행 표시 (템플릿 선택 / 커스터마이즈 / 확인)
+    events:
+      - on: click:step
+        do: 완료된 단계로 이동
+
+  - id: template_grid
+    type: grid
+    position: main
+    function: 팀 템플릿 카드 그리드 (마케팅, 재무, 전략기획 등)
+    data_source:
+      resource: team_templates
+    events:
+      - on: click:template
+        do: 템플릿 선택 후 Step 2로 이동
+
+  - id: customize_form
+    type: form
+    position: main
+    function: 팀 이름/설명 입력 + 에이전트 목록 편집 (추가/삭제/수정)
+    data_source:
+      resource: team_templates
+    events:
+      - on: click:add_agent
+        do: 새 에이전트 행 추가
+      - on: click:remove_agent
+        do: 에이전트 삭제
+      - on: click:edit_agent
+        do: 에이전트 편집 모달 (이름, 역할, 모델, 프롬프트)
+      - on: click:next
+        do: Step 3로 이동
+
+  - id: confirm_summary
+    type: detail
+    position: main
+    function: 최종 팀 구성 요약 + 팀 생성 버튼
+    events:
+      - on: click:create
+        do: 팀 생성 API 호출, /dashboard로 이동
+
+connections:
+  navigations:
+    - from: confirm_summary
+      to: /dashboard
+
+  shared_components:
+    - sidebar_navigation
+    - header
+
+tests:
+  - name: 템플릿 선택
+    when: 마케팅 팀 템플릿 카드 클릭
+    then:
+      - Step 2로 이동
+      - 기본 에이전트 5명 목록 표시
+
+  - name: 에이전트 커스터마이즈
+    when: 에이전트 추가 버튼 클릭
+    then:
+      - 새 에이전트 행 추가
+      - 이름/역할/모델 입력 가능
+
+  - name: 팀 생성 완료
+    when: Step 3에서 "팀 생성" 클릭
+    then:
+      - 팀 생성 성공
+      - /dashboard로 이동
+      - 조직도에 새 팀 표시
+
+  - name: 에이전트 프롬프트 편집
+    when: 에이전트 편집 아이콘 클릭
+    then:
+      - 편집 모달에 프롬프트 템플릿 표시
+      - 모델 선택 드롭다운 표시

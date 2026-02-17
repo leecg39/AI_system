@@ -1,0 +1,77 @@
+version: "2.0"
+
+screen:
+  name: 작업 이력
+  route: /tasks/history
+  layout: dashboard
+  auth: true
+
+data_requirements:
+  - resource: tasks
+    needs: [id, type, status, created_at, completed_at, team_name, duration]
+    filters: { page: "?page", team_id: "?team", status: "?status", date_from: "?from", date_to: "?to" }
+    auth_required: true
+
+  - resource: teams
+    needs: [id, name]
+    auth_required: true
+
+components:
+  - id: filter_bar
+    type: filter-form
+    position: main
+    function: 필터 (팀별, 날짜 범위, 상태별)
+    data_source:
+      resource: teams
+    events:
+      - on: change:filter
+        do: 필터 적용, URL 쿼리 업데이트
+      - on: click:reset
+        do: 필터 초기화
+
+  - id: task_table
+    type: table
+    position: main
+    function: 작업 목록 테이블 (날짜, 팀, 유형, 상태, 소요 시간)
+    data_source:
+      resource: tasks
+    events:
+      - on: click:row
+        do: /tasks/:id/results로 이동
+      - on: click:sort
+        do: 컬럼별 정렬
+
+  - id: pagination
+    type: navigation
+    position: main
+    function: 페이지네이션
+    events:
+      - on: click:page
+        do: 해당 페이지 로드
+
+connections:
+  navigations:
+    - from: task_table
+      to: /tasks/:id/results
+
+  shared_components:
+    - sidebar_navigation
+    - header
+
+tests:
+  - name: 초기 로드
+    when: /tasks/history 접속
+    then:
+      - 최근 작업 목록 표시
+      - 필터 바 표시
+
+  - name: 팀별 필터링
+    when: 마케팅 팀 필터 선택
+    then:
+      - 마케팅 팀 작업만 표시
+      - URL에 ?team= 파라미터 추가
+
+  - name: 작업 클릭
+    when: 작업 행 클릭
+    then:
+      - /tasks/:id/results로 이동

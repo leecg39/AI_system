@@ -1,0 +1,55 @@
+version: "2.0"
+
+screen:
+  name: 회원가입
+  route: /signup
+  layout: full-width
+  auth: false
+
+data_requirements:
+  - resource: users
+    needs: [email, name]
+    auth_required: false
+
+components:
+  - id: signup_form
+    type: form
+    position: main
+    function: 이메일/비밀번호/이름 입력 및 회원가입 처리
+    data_source:
+      resource: users
+    events:
+      - on: submit
+        do: 회원가입 API 호출, 성공 시 /dashboard로 이동
+
+  - id: login_link
+    type: navigation
+    position: main
+    function: 로그인 페이지로 이동 링크
+    events:
+      - on: click
+        do: /login으로 이동
+
+connections:
+  navigations:
+    - from: signup_form
+      to: /dashboard
+    - from: login_link
+      to: /login
+
+tests:
+  - name: 회원가입 성공
+    when: 모든 필드 입력 후 가입 클릭
+    then:
+      - 계정 생성
+      - /dashboard로 이동
+
+  - name: 이메일 중복
+    when: 이미 등록된 이메일로 가입 시도
+    then:
+      - "이미 등록된 이메일입니다" 에러 표시
+
+  - name: 유효성 검사
+    when: 비밀번호 8자 미만 입력
+    then:
+      - 비밀번호 규칙 안내 표시

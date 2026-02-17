@@ -1,0 +1,108 @@
+version: "2.0"
+
+screen:
+  name: 실시간 모니터링
+  route: /tasks/:id/monitor
+  layout: dashboard
+  auth: true
+
+data_requirements:
+  - resource: tasks
+    needs: [id, status, progress, team_id]
+    filters: { id: ":id" }
+    auth_required: true
+
+  - resource: agents
+    needs: [id, name, role, layer]
+    filters: { team_id: "task.team_id" }
+    auth_required: true
+
+  - resource: task_logs
+    needs: [agent_id, status, message, progress, created_at]
+    filters: { task_id: ":id" }
+    auth_required: true
+
+components:
+  - id: overall_progress
+    type: stat-card
+    position: main
+    function: 작업 전체 진행률 바 표시
+    data_source:
+      resource: tasks
+    events:
+      - on: ws:progress_update
+        do: 진행률 바 애니메이션 업데이트
+
+  - id: agent_status_grid
+    type: grid
+    position: main
+    function: 에이전트별 상태 카드 그리드 (이름, 상태 아이콘, 메시지, 진행률)
+    data_source:
+      resource: task_logs
+    events:
+      - on: ws:agent_update
+        do: 해당 에이전트 카드 실시간 업데이트
+
+  - id: log_stream
+    type: list
+    position: main
+    function: 실시간 로그 스트림 (선택적 펼치기/접기)
+    data_source:
+      resource: task_logs
+    events:
+      - on: click:toggle
+        do: 로그 패널 펼치기/접기
+      - on: ws:new_log
+        do: 새 로그 항목 추가
+
+  - id: cancel_button
+    type: button
+    position: main
+    function: 작업 취소 버튼
+    events:
+      - on: click
+        do: 취소 확인 모달 → 작업 취소 API 호출
+
+  - id: view_results_button
+    type: button
+    position: main
+    function: 결과물 보기 버튼 (모든 에이전트 완료 시 활성화)
+    events:
+      - on: click
+        do: /tasks/:id/results로 이동
+
+connections:
+  navigations:
+    - from: view_results_button
+      to: /tasks/:id/results
+
+  shared_components:
+    - sidebar_navigation
+    - header
+
+  external:
+    - websocket
+
+tests:
+  - name: 실시간 업데이트
+    when: 에이전트 상태 변경 WebSocket 메시지 수신
+    then:
+      - 해당 에이전트 카드 상태/메시지 업데이트
+      - 전체 진행률 바 업데이트
+
+  - name: 작업 완료
+    when: 모든 에이전트 완료 상태
+    then:
+      - "결과물 보기" 버튼 활성화
+      - 완료 알림 표시
+
+  - name: 작업 취소
+    when: 취소 버튼 클릭 후 확인
+    then:
+      - 작업 상태 cancelled로 변경
+      - 에이전트 상태 업데이트
+
+  - name: 오류 발생
+    when: 에이전트 오류 상태 수신
+    then:
+      - 해당 카드에 오류 아이콘/메시지 표시

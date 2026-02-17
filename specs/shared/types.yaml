@@ -1,0 +1,59 @@
+# Shared Types - AI Agent Team Platform
+version: "2.0"
+
+types:
+  TeamStatus:
+    type: enum
+    values: [active, paused, archived]
+    colors:
+      active: "#22C55E"
+      paused: "#EAB308"
+      archived: "#9CA3AF"
+
+  TaskStatus:
+    type: enum
+    values: [pending, running, completed, failed, cancelled]
+    colors:
+      pending: "#9CA3AF"
+      running: "#22C55E"
+      completed: "#3B82F6"
+      failed: "#EF4444"
+      cancelled: "#9CA3AF"
+
+  AgentLayer:
+    type: enum
+    values: [orchestration, research, execution, quality]
+    colors:
+      orchestration: "#2563EB"
+      research: "#7C3AED"
+      execution: "#22C55E"
+      quality: "#F59E0B"
+
+  AgentStatus:
+    type: enum
+    values: [started, processing, completed, error]
+    icons:
+      started: "circle-green"
+      processing: "circle-green-pulse"
+      completed: "check-circle"
+      error: "circle-red"
+
+  ClaudeModel:
+    type: enum
+    values: [opus, sonnet, haiku]
+    labels:
+      opus: "Claude Opus"
+      sonnet: "Claude Sonnet"
+      haiku: "Claude Haiku"
+
+  UserPlan:
+    type: enum
+    values: [free, pro, enterprise]
+    labels:
+      free: "무료"
+      pro: "프로"
+      enterprise: "엔터프라이즈"
+
+  ResultType:
+    type: enum
+    values: [blog, sns, newsletter, report, analysis, spreadsheet]

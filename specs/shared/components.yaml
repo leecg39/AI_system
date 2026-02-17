@@ -1,0 +1,69 @@
+# Shared Components - AI Agent Team Platform
+version: "2.0"
+
+shared_components:
+  - id: sidebar_navigation
+    type: navigation
+    used_in: [dashboard, team-detail, task-request, task-monitor, task-results, team-create, task-history, settings]
+    function: 사이드바 네비게이션 (홈, 작업 이력, 새 팀 만들기, 설정, 프로필)
+    items:
+      - label: 홈
+        icon: Home
+        route: /dashboard
+      - label: 작업 이력
+        icon: ClipboardList
+        route: /tasks/history
+      - label: 새 팀 만들기
+        icon: Plus
+        route: /teams/new
+      - label: 설정
+        icon: Settings
+        route: /settings
+
+  - id: header
+    type: navigation
+    used_in: [dashboard, team-detail, task-request, task-monitor, task-results, team-create, task-history, settings]
+    function: 상단 헤더 (검색, 알림, 프로필 메뉴)
+    items:
+      - label: 검색
+        icon: Search
+      - label: 알림
+        icon: Bell
+      - label: 프로필
+        icon: User
+
+  - id: agent_status_card
+    type: card
+    used_in: [task-monitor]
+    function: 에이전트 상태 표시 카드 (이름, 상태 아이콘, 메시지, 진행률)
+    status_colors:
+      running: "#22C55E"
+      waiting: "#EAB308"
+      completed: "#3B82F6"
+      error: "#EF4444"
+      idle: "#9CA3AF"
+
+  - id: team_card
+    type: card
+    used_in: [dashboard]
+    function: 팀 카드 (이름, 에이전트 수, 최근 작업 수, 상태)
+
+  - id: org_chart_node
+    type: card
+    used_in: [dashboard, team-detail]
+    function: 조직도 노드 (React Flow 기반)
+    layer_colors:
+      orchestration: "#2563EB"
+      research: "#7C3AED"
+      execution: "#22C55E"
+      quality: "#F59E0B"
+
+  - id: confirm_modal
+    type: modal
+    used_in: [task-monitor, settings]
+    function: 확인 모달 (작업 취소, 데이터 삭제 등 위험 작업 확인)
+
+  - id: toast_notification
+    type: toast
+    used_in: [settings, team-create, task-request]
+    function: 성공/실패 토스트 알림

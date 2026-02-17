@@ -1,0 +1,53 @@
+# Screen Index - AI Agent Team Platform
+version: "2.0"
+
+screens:
+  - file: login.yaml
+    name: 로그인
+    route: /login
+    auth: false
+
+  - file: signup.yaml
+    name: 회원가입
+    route: /signup
+    auth: false
+
+  - file: dashboard.yaml
+    name: 홈 - 조직도 뷰
+    route: /dashboard
+    auth: true
+
+  - file: team-detail.yaml
+    name: 팀 상세
+    route: /teams/:id
+    auth: true
+
+  - file: task-request.yaml
+    name: 작업 요청
+    route: /teams/:id/tasks/new
+    auth: true
+
+  - file: task-monitor.yaml
+    name: 실시간 모니터링
+    route: /tasks/:id/monitor
+    auth: true
+
+  - file: task-results.yaml
+    name: 결과물 미리보기
+    route: /tasks/:id/results
+    auth: true
+
+  - file: team-create.yaml
+    name: 팀 생성
+    route: /teams/new
+    auth: true
+
+  - file: task-history.yaml
+    name: 작업 이력
+    route: /tasks/history
+    auth: true
+
+  - file: settings.yaml
+    name: 설정
+    route: /settings
+    auth: true

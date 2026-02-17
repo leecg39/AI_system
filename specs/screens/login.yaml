@@ -1,0 +1,58 @@
+version: "2.0"
+
+screen:
+  name: 로그인
+  route: /login
+  layout: full-width
+  auth: false
+
+data_requirements:
+  - resource: users
+    needs: [email]
+    auth_required: false
+
+components:
+  - id: login_form
+    type: form
+    position: main
+    function: 이메일/비밀번호 입력 및 로그인 처리
+    data_source:
+      resource: users
+    events:
+      - on: submit
+        do: 로그인 API 호출, 성공 시 /dashboard로 이동
+      - on: click:google_login
+        do: Google OAuth 로그인 시작
+
+  - id: signup_link
+    type: navigation
+    position: main
+    function: 회원가입 페이지로 이동 링크
+    events:
+      - on: click
+        do: /signup으로 이동
+
+connections:
+  navigations:
+    - from: login_form
+      to: /dashboard
+    - from: signup_link
+      to: /signup
+
+tests:
+  - name: 로그인 성공
+    when: 올바른 이메일/비밀번호 입력 후 로그인 클릭
+    then:
+      - /dashboard로 이동
+      - JWT 토큰 저장
+
+  - name: 로그인 실패
+    when: 잘못된 비밀번호 입력 후 로그인 클릭
+    then:
+      - 에러 메시지 표시
+      - 페이지 유지
+
+  - name: 비인증 리다이렉트
+    when: 비인증 상태에서 /dashboard 접근
+    then:
+      - /login으로 리다이렉트
