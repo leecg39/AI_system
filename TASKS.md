@@ -71,7 +71,7 @@ flowchart TD
 
 # Phase 0: Project Setup
 
-## [ ] P0-T0.1: 프로젝트 초기화
+## [x] P0-T0.1: 프로젝트 초기화
 - **담당**: frontend-specialist
 - **파일**: `package.json`, `docker-compose.yml`, `.env.example`
 - **스펙**: 모노레포 구조 생성, Docker Compose 설정 (PostgreSQL 16, Redis), 환경변수 설정
@@ -79,7 +79,7 @@ flowchart TD
   - [ ] `docker-compose up` 으로 DB/Redis 기동
   - [ ] `.env.example` 작성
 
-## [ ] P0-T0.2: Frontend 초기화
+## [x] P0-T0.2: Frontend 초기화
 - **담당**: frontend-specialist
 - **파일**: `frontend/package.json`, `frontend/next.config.ts`, `frontend/tailwind.config.ts`
 - **스펙**: Next.js 15 (App Router), Tailwind CSS, shadcn/ui, Zustand 설치 및 설정
@@ -89,7 +89,7 @@ flowchart TD
   - [ ] shadcn/ui 컴포넌트 사용 가능
   - [ ] TypeScript strict mode
 
-## [ ] P0-T0.3: Backend 초기화
+## [x] P0-T0.3: Backend 초기화
 - **담당**: backend-specialist
 - **파일**: `backend/app/main.py`, `backend/requirements.txt`, `backend/pyproject.toml`
 - **스펙**: FastAPI, SQLAlchemy 2.0, Celery + Redis, uvicorn 설정
@@ -99,7 +99,7 @@ flowchart TD
   - [ ] `/docs` 에서 Swagger UI 확인
   - [ ] Python type hints 설정
 
-## [ ] P0-T0.4: DB 초기화
+## [x] P0-T0.4: DB 초기화
 - **담당**: database-specialist
 - **파일**: `backend/alembic/`, `backend/app/models/`
 - **스펙**: Alembic 마이그레이션 설정, SQLAlchemy 모델 정의 (users, teams, agents, tasks, task_results, task_logs, team_templates), 인덱스 생성

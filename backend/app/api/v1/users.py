@@ -1,10 +1,14 @@
+# @TASK P0-T0.3 - User endpoints
+# @SPEC docs/planning/02-trd.md#user-api
 """User endpoints."""
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, status
+
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.deps import CurrentUser
 from app.db.session import get_db
 from app.schemas.user import UserResponse, UserUpdate
-from app.core.deps import CurrentUser
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -30,14 +34,3 @@ async def update_current_user_profile(
     await db.commit()
     await db.refresh(current_user)
     return current_user
-
-
-@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_current_user(
-    current_user: CurrentUser,
-    db: Annotated[AsyncSession, Depends(get_db)],
-):
-    """Delete current user's account (soft delete by deactivating)."""
-    current_user.is_active = False
-    await db.commit()
-    return None
