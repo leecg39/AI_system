@@ -3,8 +3,17 @@
 
 'use client';
 
+import dynamic from 'next/dynamic';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
+
+const Agentation = dynamic(
+  () => import('agentation').then((mod) => mod.Agentation),
+  { ssr: false }
+);
+
+const isDevelopment = process.env.NODE_ENV === 'development';
+const isTest = process.env.NODE_ENV === 'test';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -22,6 +31,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
+      {isDevelopment && !isTest ? <Agentation /> : null}
     </QueryClientProvider>
   );
 }

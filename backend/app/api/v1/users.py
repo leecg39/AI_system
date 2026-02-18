@@ -20,6 +20,7 @@ async def get_current_user_profile(current_user: CurrentUser):
 
 
 @router.patch("/me", response_model=UserResponse)
+@router.put("/me", response_model=UserResponse)
 async def update_current_user_profile(
     user_update: UserUpdate,
     current_user: CurrentUser,

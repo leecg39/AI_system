@@ -1,6 +1,8 @@
 # @TASK P0-T0.3 - Authentication schemas
 # @SPEC docs/planning/02-trd.md#authentication
 """Authentication schemas."""
+from typing import Optional
+
 from pydantic import BaseModel, EmailStr
 
 
@@ -10,7 +12,7 @@ class Token(BaseModel):
 
 
 class TokenPayload(BaseModel):
-    sub: str | None = None
+    sub: Optional[str] = None
 
 
 class LoginRequest(BaseModel):
