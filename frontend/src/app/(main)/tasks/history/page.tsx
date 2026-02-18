@@ -58,15 +58,15 @@ function statusLabel(status: string): string {
 
 function statusClassName(status: string): string {
   if (status === "completed") {
-    return "border-emerald-200 bg-emerald-50 text-emerald-700";
+    return "border-accent bg-secondary text-accent";
   }
   if (status === "failed" || status === "cancelled") {
-    return "border-red-200 bg-red-50 text-red-700";
+    return "border-destructive bg-background text-destructive-foreground";
   }
   if (status === "running") {
-    return "border-blue-200 bg-blue-50 text-blue-700";
+    return "border-accent bg-secondary text-accent";
   }
-  return "border-amber-200 bg-amber-50 text-amber-700";
+  return "border-accent bg-secondary text-accent";
 }
 
 function toStartOfDayIso(dateInput: string): string {
@@ -168,22 +168,22 @@ export default function TaskHistoryPage() {
   return (
     <div className="space-y-6 py-4" data-testid="task-history-page">
       <header className="space-y-2">
-        <h1 className="text-3xl font-bold text-slate-900">작업 이력</h1>
-        <p className="text-slate-600">팀별 작업 히스토리를 조회하고 결과 화면으로 이동할 수 있습니다.</p>
+        <h1 className="text-3xl font-bold text-foreground">작업 이력</h1>
+        <p className="text-muted-foreground">팀별 작업 히스토리를 조회하고 결과 화면으로 이동할 수 있습니다.</p>
       </header>
 
       <section
-        className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+        className="border-neo border-foreground bg-card p-6 shadow-neo-medium"
         data-testid="task-history-filters"
       >
-        <h2 className="text-lg font-semibold text-slate-900">필터</h2>
-        <p className="mt-1 text-sm text-slate-600">팀, 상태, 날짜 조건으로 작업 이력을 필터링합니다.</p>
+        <h2 className="text-lg font-bold text-foreground">필터</h2>
+        <p className="mt-1 text-sm text-muted-foreground">팀, 상태, 날짜 조건으로 작업 이력을 필터링합니다.</p>
 
         <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <label className="space-y-1 text-sm">
-            <span className="font-medium text-slate-700">팀</span>
+            <span className="font-bold text-foreground">팀</span>
             <select
-              className="w-full rounded-md border border-slate-300 px-3 py-2"
+              className="w-full border-neo border-foreground bg-background px-3 py-2 text-foreground"
               value={teamFilter}
               onChange={(event) => setTeamFilter(event.target.value)}
             >
@@ -197,9 +197,9 @@ export default function TaskHistoryPage() {
           </label>
 
           <label className="space-y-1 text-sm">
-            <span className="font-medium text-slate-700">상태</span>
+            <span className="font-bold text-foreground">상태</span>
             <select
-              className="w-full rounded-md border border-slate-300 px-3 py-2"
+              className="w-full border-neo border-foreground bg-background px-3 py-2 text-foreground"
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value)}
             >
@@ -213,20 +213,20 @@ export default function TaskHistoryPage() {
           </label>
 
           <label className="space-y-1 text-sm">
-            <span className="font-medium text-slate-700">시작일</span>
+            <span className="font-bold text-foreground">시작일</span>
             <input
               type="date"
-              className="w-full rounded-md border border-slate-300 px-3 py-2"
+              className="w-full border-neo border-foreground bg-background px-3 py-2 text-foreground"
               value={fromDateFilter}
               onChange={(event) => setFromDateFilter(event.target.value)}
             />
           </label>
 
           <label className="space-y-1 text-sm">
-            <span className="font-medium text-slate-700">종료일</span>
+            <span className="font-bold text-foreground">종료일</span>
             <input
               type="date"
-              className="w-full rounded-md border border-slate-300 px-3 py-2"
+              className="w-full border-neo border-foreground bg-background px-3 py-2 text-foreground"
               value={toDateFilter}
               onChange={(event) => setToDateFilter(event.target.value)}
             />
@@ -243,35 +243,35 @@ export default function TaskHistoryPage() {
         </div>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm" data-testid="task-history-table">
+      <section className="border-neo border-foreground bg-card p-6 shadow-neo-medium" data-testid="task-history-table">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-lg font-semibold text-slate-900">작업 목록</h2>
-          <p className="text-sm text-slate-600">
+          <h2 className="text-lg font-bold text-foreground">작업 목록</h2>
+          <p className="text-sm text-muted-foreground">
             총 {total}개 · {page}/{totalPages} 페이지
           </p>
         </div>
 
         {error ? (
-          <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
+          <div className="mb-4 border-neo border-destructive bg-background px-3 py-2 text-sm text-destructive-foreground">{error}</div>
         ) : null}
 
         {isLoading ? (
-          <p className="text-sm text-slate-600">작업 목록을 불러오는 중...</p>
+          <p className="text-sm text-muted-foreground">작업 목록을 불러오는 중...</p>
         ) : tasks.length === 0 ? (
-          <div className="rounded-md border border-dashed border-slate-300 p-8 text-center" data-testid="task-history-empty">
-            <p className="font-medium text-slate-700">조건에 맞는 작업이 없습니다.</p>
-            <p className="mt-1 text-sm text-slate-500">필터를 조정하거나 다른 기간을 선택해 보세요.</p>
+          <div className="border-neo border-foreground p-8 text-center" data-testid="task-history-empty">
+            <p className="font-bold text-foreground">조건에 맞는 작업이 없습니다.</p>
+            <p className="mt-1 text-sm text-muted-foreground">필터를 조정하거나 다른 기간을 선택해 보세요.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full border-separate border-spacing-0 text-sm">
               <thead>
-                <tr className="bg-slate-50 text-left text-slate-600">
-                  <th className="rounded-l-md border border-slate-200 px-3 py-2">생성 시각</th>
-                  <th className="border-y border-slate-200 px-3 py-2">팀</th>
-                  <th className="border-y border-slate-200 px-3 py-2">유형</th>
-                  <th className="border-y border-slate-200 px-3 py-2">상태</th>
-                  <th className="rounded-r-md border border-slate-200 px-3 py-2">소요 시간</th>
+                <tr className="bg-secondary text-left text-foreground">
+                  <th className="border border-neo border-foreground px-3 py-2 font-bold">생성 시각</th>
+                  <th className="border-y border-neo border-foreground px-3 py-2 font-bold">팀</th>
+                  <th className="border-y border-neo border-foreground px-3 py-2 font-bold">유형</th>
+                  <th className="border-y border-neo border-foreground px-3 py-2 font-bold">상태</th>
+                  <th className="border border-neo border-foreground px-3 py-2 font-bold">소요 시간</th>
                 </tr>
               </thead>
               <tbody>
@@ -280,7 +280,7 @@ export default function TaskHistoryPage() {
                     key={task.id}
                     tabIndex={0}
                     role="button"
-                    className="cursor-pointer outline-none transition-colors hover:bg-slate-50 focus:bg-slate-50"
+                    className="cursor-pointer outline-none transition-colors hover:bg-secondary focus:bg-secondary"
                     onClick={() => handleRowClick(task.id)}
                     onKeyDown={(event) => {
                       if (event.key === "Enter" || event.key === " ") {
@@ -289,15 +289,15 @@ export default function TaskHistoryPage() {
                       }
                     }}
                   >
-                    <td className="border-b border-slate-200 px-3 py-3 text-slate-700">{formatDateTime(task.created_at)}</td>
-                    <td className="border-b border-slate-200 px-3 py-3 text-slate-700">{task.team_name}</td>
-                    <td className="border-b border-slate-200 px-3 py-3 text-slate-700">{task.type}</td>
-                    <td className="border-b border-slate-200 px-3 py-3">
-                      <span className={`inline-flex rounded-full border px-2 py-1 text-xs ${statusClassName(task.status)}`}>
+                    <td className="border-b border-neo border-foreground px-3 py-3 text-foreground">{formatDateTime(task.created_at)}</td>
+                    <td className="border-b border-neo border-foreground px-3 py-3 text-foreground">{task.team_name}</td>
+                    <td className="border-b border-neo border-foreground px-3 py-3 text-foreground">{task.type}</td>
+                    <td className="border-b border-neo border-foreground px-3 py-3">
+                      <span className={`inline-flex border-neo border px-2 py-1 text-xs font-bold ${statusClassName(task.status)}`}>
                         {statusLabel(task.status)}
                       </span>
                     </td>
-                    <td className="border-b border-slate-200 px-3 py-3 text-slate-700">{task.duration ?? "-"}</td>
+                    <td className="border-b border-neo border-foreground px-3 py-3 text-foreground">{task.duration ?? "-"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -309,7 +309,7 @@ export default function TaskHistoryPage() {
           <Button type="button" variant="outline" disabled={page <= 1 || isLoading} onClick={() => setPage((current) => Math.max(1, current - 1))}>
             이전
           </Button>
-          <span className="px-2 text-sm text-slate-600">{page} / {totalPages}</span>
+          <span className="px-2 text-sm text-muted-foreground">{page} / {totalPages}</span>
           <Button
             type="button"
             variant="outline"

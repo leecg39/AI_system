@@ -120,12 +120,12 @@ export default function SettingsPage() {
 
   const planBadgeClassName = useMemo(() => {
     if (user?.plan === "enterprise") {
-      return "border-violet-300 bg-violet-50 text-violet-700";
+      return "border-accent bg-secondary text-accent";
     }
     if (user?.plan === "pro") {
-      return "border-blue-300 bg-blue-50 text-blue-700";
+      return "border-accent bg-secondary text-accent";
     }
-    return "border-slate-300 bg-slate-50 text-slate-700";
+    return "border-foreground bg-secondary text-foreground";
   }, [user?.plan]);
 
   const handleSaveProfile = async () => {

@@ -58,8 +58,8 @@ export default function DashboardPage() {
   if (isLoading) {
     return (
       <div className="space-y-4 py-8" data-testid="dashboard-loading">
-        <h1 className="text-3xl font-bold text-slate-900">홈</h1>
-        <p className="text-slate-600">대시보드를 불러오는 중...</p>
+        <h1 className="text-3xl font-bold text-foreground">홈</h1>
+        <p className="text-muted-foreground">대시보드를 불러오는 중...</p>
       </div>
     );
   }
@@ -67,9 +67,9 @@ export default function DashboardPage() {
   if (error) {
     return (
       <div className="space-y-4 py-8" data-testid="dashboard-error">
-        <h1 className="text-3xl font-bold text-slate-900">홈</h1>
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
-          <p className="font-medium">대시보드를 불러오지 못했습니다.</p>
+        <h1 className="text-3xl font-bold text-foreground">홈</h1>
+        <div className="border-neo border-destructive bg-background p-4 text-destructive-foreground">
+          <p className="font-bold">대시보드를 불러오지 못했습니다.</p>
           <p className="text-sm">{error}</p>
         </div>
         <Button type="button" onClick={() => void loadDashboard()}>
@@ -83,8 +83,8 @@ export default function DashboardPage() {
     <div className="space-y-8 py-4">
       <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">홈</h1>
-          <p className="text-slate-600">전체 팀 현황과 오늘의 작업 지표를 확인하세요.</p>
+          <h1 className="text-3xl font-bold text-foreground">홈</h1>
+          <p className="text-muted-foreground">전체 팀 현황과 오늘의 작업 지표를 확인하세요.</p>
         </div>
         <CreateTeamButton />
       </header>
@@ -93,11 +93,11 @@ export default function DashboardPage() {
 
       {teams.length === 0 ? (
         <section
-          className="rounded-xl border border-dashed border-blue-300 bg-blue-50/50 p-10 text-center"
+          className="border-neo border-foreground bg-secondary p-10 text-center"
           data-testid="dashboard-empty"
         >
-          <h2 className="text-2xl font-semibold text-slate-900">첫 번째 AI 팀을 만들어보세요</h2>
-          <p className="mt-2 text-slate-600">팀을 생성하면 조직도와 작업 현황이 여기에 표시됩니다.</p>
+          <h2 className="text-2xl font-bold text-foreground">첫 번째 AI 팀을 만들어보세요</h2>
+          <p className="mt-2 text-muted-foreground">팀을 생성하면 조직도와 작업 현황이 여기에 표시됩니다.</p>
           <div className="mt-6 flex justify-center">
             <CreateTeamButton emphasized />
           </div>
