@@ -1,9 +1,12 @@
 # @TASK P0-T0.3 - Celery worker configuration
 # @SPEC docs/planning/02-trd.md#celery-config
 """Celery application configuration."""
-from celery import Celery
+import importlib
 
 from app.core.config import settings
+
+celery_module = importlib.import_module("celery")
+Celery = getattr(celery_module, "Celery")
 
 celery_app = Celery(
     "worker",
@@ -21,4 +24,5 @@ celery_app.conf.update(
     task_routes={
         "app.workers.*": {"queue": "default"},
     },
+    imports=("app.workers.task_worker",),
 )

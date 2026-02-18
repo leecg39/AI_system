@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api import ws
 from app.api.v1.endpoints import api_v1_router
 from app.core.config import settings
 
@@ -40,6 +41,7 @@ app.add_middleware(
 
 # Include API v1 routers
 app.include_router(api_v1_router)
+app.include_router(ws.router)
 
 
 @app.get("/health")

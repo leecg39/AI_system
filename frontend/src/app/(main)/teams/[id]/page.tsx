@@ -13,26 +13,50 @@ import type { Agent } from "@/types/agent";
 import type { Team } from "@/types/team";
 
 interface TeamDetailPageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
 export default function TeamDetailPage({ params }: TeamDetailPageProps) {
+  const [teamId, setTeamId] = useState<string | null>(null);
   const [team, setTeam] = useState<Team | null>(null);
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    let isActive = true;
+
+    void params
+      .then((resolvedParams) => {
+        if (isActive) {
+          setTeamId(resolvedParams.id);
+        }
+      })
+      .catch(() => {
+        if (isActive) {
+          setError("팀 정보를 불러오기 위한 경로 파라미터를 확인하지 못했습니다.");
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, [params]);
+
   const loadTeamDetail = useCallback(async () => {
+    if (!teamId) {
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
       const [teamResponse, agentsResponse] = await Promise.all([
-        getTeamById(params.id),
-        listAgents(params.id),
+        getTeamById(teamId),
+        listAgents(teamId),
       ]);
       setTeam(teamResponse);
       setAgents(agentsResponse.agents);
@@ -49,11 +73,13 @@ export default function TeamDetailPage({ params }: TeamDetailPageProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [params.id]);
+  }, [teamId]);
 
   useEffect(() => {
-    void loadTeamDetail();
-  }, [loadTeamDetail]);
+    if (teamId) {
+      void loadTeamDetail();
+    }
+  }, [teamId, loadTeamDetail]);
 
   const selectedAgent = useMemo(() => {
     if (!selectedAgentId) {
@@ -90,7 +116,7 @@ export default function TeamDetailPage({ params }: TeamDetailPageProps) {
     <div className="space-y-6 py-4">
       <TeamHeader team={team} />
 
-      <NewTaskButton />
+      <NewTaskButton teamId={team.id} />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">

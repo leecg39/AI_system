@@ -207,6 +207,30 @@ class TestUpdateMe:
         assert response.status_code == 401
 
 
+class TestPutMe:
+    @pytest.mark.anyio
+    async def test_put_name(self, client, test_user, auth_headers):
+        response = await client.put(
+            "/api/v1/users/me",
+            json={"name": "Put Updated Name"},
+            headers=auth_headers,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["name"] == "Put Updated Name"
+        assert data["email"] == "test@example.com"
+
+    @pytest.mark.anyio
+    async def test_put_me_unauthenticated(self, client):
+        response = await client.put(
+            "/api/v1/users/me",
+            json={"name": "Hacker"},
+        )
+
+        assert response.status_code == 401
+
+
 # ---------------------------------------------------------------------------
 # POST /api/v1/auth/logout
 # ---------------------------------------------------------------------------

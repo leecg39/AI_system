@@ -61,6 +61,10 @@ const AGENTS_FIXTURE = {
   total: 2,
 };
 
+function renderTeamDetailPage() {
+  return render(<TeamDetailPage params={Promise.resolve({ id: "team-1" })} />);
+}
+
 describe("TeamDetailPage", () => {
   beforeEach(() => {
     vi.mocked(getTeamById).mockResolvedValue(TEAM_FIXTURE);
@@ -68,7 +72,7 @@ describe("TeamDetailPage", () => {
   });
 
   it("초기 로드 시 팀 정보와 에이전트 조직도를 표시한다", async () => {
-    render(<TeamDetailPage params={{ id: "team-1" }} />);
+    renderTeamDetailPage();
 
     await waitFor(() => {
       expect(screen.getByRole("heading", { name: "마케팅 팀" })).toBeInTheDocument();
@@ -83,7 +87,7 @@ describe("TeamDetailPage", () => {
   it("에이전트 클릭 시 상세 패널 정보를 갱신한다", async () => {
     const user = userEvent.setup();
 
-    render(<TeamDetailPage params={{ id: "team-1" }} />);
+    renderTeamDetailPage();
 
     const targetAgentButton = await screen.findByRole("button", { name: "blog_writer" });
     await user.click(targetAgentButton);
@@ -92,16 +96,16 @@ describe("TeamDetailPage", () => {
     expect(screen.getByText("Writer")).toBeInTheDocument();
   });
 
-  it("새 작업 요청 버튼은 비활성 상태로 표시된다", async () => {
-    render(<TeamDetailPage params={{ id: "team-1" }} />);
+  it("새 작업 요청 버튼은 작업 요청 화면 링크로 표시된다", async () => {
+    renderTeamDetailPage();
 
-    const button = await screen.findByRole("button", { name: "새 작업 요청 (Coming soon)" });
-    expect(button).toBeDisabled();
-    expect(screen.getByText("작업 요청 기능은 Phase 3에서 활성화됩니다.")).toBeInTheDocument();
+    const link = await screen.findByRole("link", { name: "새 작업 요청" });
+    expect(link).toHaveAttribute("href", "/teams/team-1/tasks/new");
+    expect(screen.getByText("URL 또는 파일 기반 작업을 3단계로 요청합니다.")).toBeInTheDocument();
   });
 
   it("팀 설정 버튼을 표시한다", async () => {
-    render(<TeamDetailPage params={{ id: "team-1" }} />);
+    renderTeamDetailPage();
 
     const settingsButton = await screen.findByRole("button", { name: "팀 설정" });
     expect(settingsButton).toBeInTheDocument();

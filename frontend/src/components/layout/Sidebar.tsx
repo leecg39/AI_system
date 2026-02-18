@@ -37,7 +37,7 @@ const navItems: NavItem[] = [
   },
   {
     label: '작업 이력',
-    href: '/tasks',
+    href: '/tasks/history',
     icon: History,
   },
   {
