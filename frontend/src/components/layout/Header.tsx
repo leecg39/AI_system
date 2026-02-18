@@ -32,7 +32,7 @@ export function Header({ onMenuClick }: HeaderProps) {
   };
 
   return (
-    <header className="h-16 border-b border-slate-200 bg-white">
+    <header className="h-16 border-b border-neo border-foreground bg-card shadow-neo-light">
       <div className="flex h-full items-center gap-4 px-4 lg:px-6">
         {/* 모바일 메뉴 토글 */}
         <Button
@@ -47,11 +47,11 @@ export function Header({ onMenuClick }: HeaderProps) {
 
         {/* 검색 */}
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
             placeholder="검색..."
-            className="pl-9 bg-slate-50 border-slate-200"
+            className="pl-9 bg-secondary"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             aria-label="검색"
@@ -68,7 +68,7 @@ export function Header({ onMenuClick }: HeaderProps) {
             aria-label="알림"
           >
             <Bell className="h-5 w-5" />
-            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-blue-600" />
+            <span className="absolute top-1 right-1 h-2 w-2 bg-accent" />
           </Button>
 
           {/* 프로필 드롭다운 */}
@@ -76,12 +76,12 @@ export function Header({ onMenuClick }: HeaderProps) {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="relative h-10 w-10 rounded-full"
+                className="relative h-10 w-10"
                 aria-label="프로필 메뉴"
               >
                 <Avatar>
                   <AvatarImage src="" alt="사용자" />
-                  <AvatarFallback className="bg-blue-600 text-white">
+                  <AvatarFallback className="bg-accent text-foreground font-bold">
                     <User className="h-4 w-4" />
                   </AvatarFallback>
                 </Avatar>

@@ -63,12 +63,12 @@ export function Sidebar({ className }: SidebarProps) {
         damping: 30,
       }}
       className={cn(
-        'relative hidden lg:flex flex-col border-r border-slate-200 bg-white',
+        'relative hidden lg:flex flex-col border-r border-neo border-foreground bg-card shadow-neo-light',
         className
       )}
     >
       {/* 로고 영역 */}
-      <div className="h-16 flex items-center justify-center border-b border-slate-200">
+      <div className="h-16 flex items-center justify-center border-b border-neo border-foreground">
         <AnimatePresence mode="wait">
           {!isCollapsed ? (
             <motion.div
@@ -77,7 +77,7 @@ export function Sidebar({ className }: SidebarProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="text-xl font-bold text-blue-600"
+              className="text-xl font-bold text-accent"
             >
               AI System
             </motion.div>
@@ -88,7 +88,7 @@ export function Sidebar({ className }: SidebarProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="text-xl font-bold text-blue-600"
+              className="text-xl font-bold text-accent"
             >
               AI
             </motion.div>
@@ -107,18 +107,18 @@ export function Sidebar({ className }: SidebarProps) {
               key={item.href}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
-                'hover:bg-slate-100',
+                'flex items-center gap-3 px-3 py-2.5 transition-colors border border-transparent',
+                'hover:bg-secondary hover:border-foreground',
                 isActive
-                  ? 'bg-blue-50 text-blue-600 font-medium'
-                  : 'text-slate-700'
+                  ? 'bg-secondary border-foreground text-accent font-bold'
+                  : 'text-foreground'
               )}
               title={isCollapsed ? item.label : undefined}
             >
               <Icon
                 className={cn(
                   'h-5 w-5 flex-shrink-0',
-                  isActive ? 'text-blue-600' : 'text-slate-500'
+                  isActive ? 'text-accent' : 'text-muted-foreground'
                 )}
               />
               <AnimatePresence>
@@ -176,8 +176,8 @@ export function Sidebar({ className }: SidebarProps) {
         size="icon"
         onClick={() => setIsCollapsed(!isCollapsed)}
         className={cn(
-          'absolute -right-3 top-20 h-6 w-6 rounded-full border border-slate-200 bg-white shadow-sm',
-          'hover:bg-slate-50'
+          'absolute -right-3 top-20 h-6 w-6 border-neo border-foreground bg-card shadow-neo-light',
+          'hover:bg-secondary'
         )}
         aria-label={isCollapsed ? '사이드바 펼치기' : '사이드바 접기'}
       >
