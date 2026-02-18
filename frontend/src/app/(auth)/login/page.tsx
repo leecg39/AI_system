@@ -61,7 +61,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold tracking-tight">
@@ -89,7 +89,7 @@ export default function LoginPage() {
               {errors.email && (
                 <p
                   id="email-error"
-                  className="text-sm text-red-600"
+                  className="text-sm text-destructive-foreground"
                   role="alert"
                 >
                   {errors.email.message}
@@ -112,7 +112,7 @@ export default function LoginPage() {
               {errors.password && (
                 <p
                   id="password-error"
-                  className="text-sm text-red-600"
+                  className="text-sm text-destructive-foreground"
                   role="alert"
                 >
                   {errors.password.message}
@@ -123,7 +123,7 @@ export default function LoginPage() {
             {/* Login error message */}
             {(loginError || error) && (
               <div
-                className="rounded-md bg-red-50 p-3 text-sm text-red-800"
+                className="border-neo border-destructive bg-background p-3 text-sm text-destructive-foreground"
                 role="alert"
               >
                 {loginError || error}
@@ -173,7 +173,7 @@ export default function LoginPage() {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-muted-foreground">
+                <span className="bg-background px-2 text-muted-foreground">
                   또는
                 </span>
               </div>
@@ -219,7 +219,7 @@ export default function LoginPage() {
             계정이 없으신가요?{' '}
             <Link
               href="/signup"
-              className="font-medium text-primary hover:underline"
+              className="font-bold text-accent hover:underline"
             >
               회원가입
             </Link>

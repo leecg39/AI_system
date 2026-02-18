@@ -62,7 +62,7 @@ export default function SignupPage() {
   const displayError = formError || storeError;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">회원가입</CardTitle>
@@ -85,7 +85,7 @@ export default function SignupPage() {
                 aria-describedby={errors.name ? 'name-error' : undefined}
               />
               {errors.name && (
-                <p id="name-error" className="text-sm text-red-600" role="alert">
+                <p id="name-error" className="text-sm text-destructive-foreground" role="alert">
                   {errors.name.message}
                 </p>
               )}
@@ -104,7 +104,7 @@ export default function SignupPage() {
                 aria-describedby={errors.email ? 'email-error' : undefined}
               />
               {errors.email && (
-                <p id="email-error" className="text-sm text-red-600" role="alert">
+                <p id="email-error" className="text-sm text-destructive-foreground" role="alert">
                   {errors.email.message}
                 </p>
               )}
@@ -123,7 +123,7 @@ export default function SignupPage() {
                 aria-describedby={errors.password ? 'password-error' : undefined}
               />
               {errors.password && (
-                <p id="password-error" className="text-sm text-red-600" role="alert">
+                <p id="password-error" className="text-sm text-destructive-foreground" role="alert">
                   {errors.password.message}
                 </p>
               )}
@@ -142,7 +142,7 @@ export default function SignupPage() {
                 aria-describedby={errors.confirmPassword ? 'confirm-password-error' : undefined}
               />
               {errors.confirmPassword && (
-                <p id="confirm-password-error" className="text-sm text-red-600" role="alert">
+                <p id="confirm-password-error" className="text-sm text-destructive-foreground" role="alert">
                   {errors.confirmPassword.message}
                 </p>
               )}
@@ -151,17 +151,17 @@ export default function SignupPage() {
             {/* 에러 메시지 */}
             {displayError && (
               <div
-                className="rounded-md bg-red-50 border border-red-200 p-3"
+                className="border-neo border-destructive bg-background p-3"
                 role="alert"
               >
-                <p className="text-sm text-red-600">{displayError}</p>
+                <p className="text-sm text-destructive-foreground">{displayError}</p>
               </div>
             )}
 
             {/* 가입 버튼 */}
             <Button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700"
+              className="w-full"
               disabled={isLoading}
               aria-busy={isLoading}
             >
@@ -201,7 +201,7 @@ export default function SignupPage() {
             이미 계정이 있으신가요?{' '}
             <Link
               href="/login"
-              className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
+              className="font-bold text-accent hover:underline"
             >
               로그인
             </Link>
