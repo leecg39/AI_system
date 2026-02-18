@@ -2,11 +2,14 @@
 // @SPEC docs/planning/01-project-overview.md
 
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/components/providers';
 
-const inter = Inter({ subsets: ['latin'] });
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-space-grotesk'
+});
 
 export const metadata: Metadata = {
   title: 'AI System - Team Management',
@@ -20,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={inter.className}>
+      <body className={spaceGrotesk.variable}>
         <Providers>{children}</Providers>
       </body>
     </html>
