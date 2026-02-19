@@ -37,3 +37,5 @@ htmlcov/
 # Misc
 tmp/
 temp/
+dev.db
+*.png

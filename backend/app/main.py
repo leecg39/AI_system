@@ -18,6 +18,21 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """Application lifespan handler for startup/shutdown events."""
     logger.info("Application startup")
+    # Auto-create tables for SQLite dev mode
+    if settings.DATABASE_URL.startswith("sqlite"):
+        from app.db.session import engine
+        from app.db.base import Base
+        # Import all models so they are registered
+        import app.models.user  # noqa: F401
+        import app.models.team  # noqa: F401
+        import app.models.agent  # noqa: F401
+        import app.models.task  # noqa: F401
+        import app.models.task_result  # noqa: F401
+        import app.models.task_log  # noqa: F401
+        import app.models.team_template  # noqa: F401
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        logger.info("SQLite tables created for dev mode")
     yield
     logger.info("Application shutdown")
 
