@@ -18,16 +18,24 @@ export function StepIndicator({ currentStep }: StepIndicatorProps) {
         return (
           <li
             key={step.id}
-            className={`rounded-lg border px-4 py-3 text-sm font-medium ${
+            className={`border-[3px] px-4 py-3 text-sm font-bold shadow-[3px_3px_0_0_rgba(0,0,0,1)] transition-all ${
               isCurrent
-                ? "border-blue-300 bg-blue-50 text-blue-700"
+                ? "border-blue-600 bg-blue-50 text-blue-700"
                 : isDone
-                  ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-                  : "border-slate-200 bg-white text-slate-500"
+                  ? "border-green-600 bg-green-50 text-green-700"
+                  : "border-foreground bg-white text-muted-foreground"
             }`}
           >
-            <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full border text-xs">
-              {step.id}
+            <span
+              className={`mr-2 inline-flex h-6 w-6 items-center justify-center text-xs font-black ${
+                isCurrent
+                  ? "rounded-full bg-blue-600 text-white"
+                  : isDone
+                    ? "rounded-full bg-green-600 text-white"
+                    : "rounded-full border-[2px] border-foreground"
+              }`}
+            >
+              {isDone ? "✓" : step.id}
             </span>
             {step.label}
           </li>

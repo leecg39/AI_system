@@ -32,7 +32,7 @@ export function AgentOrgChart({ agents, onSelectAgent }: AgentOrgChartProps) {
   const nodes = useMemo<Node[]>(() => {
     const layers = ["orchestration", "research", "execution", "quality"];
 
-    return agents.map((agent, index) => {
+    return agents.map((agent) => {
       const layerIndex = Math.max(layers.indexOf(agent.layer), 0);
       const sameLayerAgents = agents.filter((item) => item.layer === agent.layer);
       const indexInLayer = sameLayerAgents.findIndex((item) => item.id === agent.id);
@@ -48,12 +48,13 @@ export function AgentOrgChart({ agents, onSelectAgent }: AgentOrgChartProps) {
         },
         style: {
           width: 200,
-          borderRadius: 12,
-          border: `2px solid ${getLayerColor(agent.layer)}`,
+          borderRadius: 0,
+          border: `3px solid ${getLayerColor(agent.layer)}`,
           background: "#ffffff",
           color: "#0f172a",
           whiteSpace: "pre-line",
-          fontWeight: 600,
+          fontWeight: 900,
+          boxShadow: "3px 3px 0 0 rgba(0,0,0,1)",
         },
       };
     });
@@ -93,11 +94,11 @@ export function AgentOrgChart({ agents, onSelectAgent }: AgentOrgChartProps) {
   return (
     <section className="space-y-3" aria-label="에이전트 조직도">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-slate-900">에이전트 조직도</h2>
-        <p className="text-sm text-slate-500">노드를 클릭하면 상세를 볼 수 있습니다.</p>
+        <h2 className="text-lg font-black text-foreground">에이전트 조직도</h2>
+        <p className="text-sm text-muted-foreground">노드를 클릭하면 상세를 볼 수 있습니다.</p>
       </div>
 
-      <div className="h-[420px] overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <div className="h-[420px] overflow-hidden border-[3px] border-foreground bg-white shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -118,7 +119,7 @@ export function AgentOrgChart({ agents, onSelectAgent }: AgentOrgChartProps) {
             key={agent.id}
             type="button"
             onClick={() => onSelectAgent(agent.id)}
-            className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+            className="border-[2px] border-foreground bg-slate-50 px-3 py-1.5 text-sm font-bold text-foreground shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)]"
           >
             {agent.name}
           </button>

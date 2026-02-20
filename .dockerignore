@@ -1,0 +1,6 @@
+.git
+*.md
+docs
+specs
+.env.local
+dev.db

@@ -22,7 +22,7 @@ celery_app.conf.update(
     enable_utc=True,
     task_track_started=True,
     task_routes={
-        "app.workers.*": {"queue": "default"},
+        "app.workers.*": {"queue": "celery"},
     },
     imports=("app.workers.task_worker",),
 )

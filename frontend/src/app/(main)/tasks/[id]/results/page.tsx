@@ -221,8 +221,8 @@ export default function TaskResultsPage({ params }: TaskResultsPageProps) {
   if (isLoading) {
     return (
       <div className="space-y-3 py-8" data-testid="task-results-loading">
-        <h1 className="text-3xl font-bold text-slate-900">결과물 미리보기</h1>
-        <p className="text-slate-600">작업 결과를 불러오는 중...</p>
+        <h1 className="text-3xl font-black text-foreground">결과물 미리보기</h1>
+        <p className="text-muted-foreground">작업 결과를 불러오는 중...</p>
       </div>
     );
   }
@@ -230,9 +230,9 @@ export default function TaskResultsPage({ params }: TaskResultsPageProps) {
   if (!task) {
     return (
       <div className="space-y-4 py-8" data-testid="task-results-error">
-        <h1 className="text-3xl font-bold text-slate-900">결과물 미리보기</h1>
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
-          <p className="font-medium">결과 페이지를 불러오지 못했습니다.</p>
+        <h1 className="text-3xl font-black text-foreground">결과물 미리보기</h1>
+        <div className="border-[3px] border-red-500 bg-red-50 p-4 text-red-700 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
+          <p className="font-bold">결과 페이지를 불러오지 못했습니다.</p>
           <p className="text-sm">{error ?? "잠시 후 다시 시도해 주세요."}</p>
         </div>
         <Button type="button" onClick={() => void loadData()}>
@@ -244,52 +244,52 @@ export default function TaskResultsPage({ params }: TaskResultsPageProps) {
 
   return (
     <div className="space-y-6 py-4" data-testid="task-results-page">
-      <header className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+      <header className="flex flex-col gap-3 border-[3px] border-foreground bg-white p-6 shadow-[4px_4px_0_0_rgba(0,0,0,1)] md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">결과물 미리보기</h1>
-          <p className="mt-1 text-sm text-slate-600">
+          <h1 className="text-3xl font-black text-foreground">결과물 미리보기</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             {task.team_name} · Task ID: <span className="font-mono">{task.id}</span>
           </p>
-          <p className="mt-1 text-xs text-slate-500">완료 시각: {formatDateTime(task.completed_at)}</p>
+          <p className="mt-1 text-xs text-muted-foreground">완료 시각: {formatDateTime(task.completed_at)}</p>
         </div>
-        <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700">
+        <span className="inline-flex items-center border-[2px] border-foreground bg-gray-50 px-3 py-1 text-xs font-bold text-foreground">
           상태: {taskStatusLabel(task.status)}
         </span>
       </header>
 
       {task.status !== "completed" ? (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700">
+        <div className="border-[3px] border-amber-500 bg-amber-50 p-4 text-sm text-amber-700 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
           작업이 아직 완료되지 않았습니다. 실시간 모니터링에서 상태를 확인한 뒤 다시 결과 페이지를 확인하세요. {" "}
-          <Link href={`/tasks/${task.id}/monitor`} className="font-medium underline">
+          <Link href={`/tasks/${task.id}/monitor`} className="font-bold underline">
             모니터링으로 이동
           </Link>
         </div>
       ) : null}
 
       {error ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>
+        <div className="border-[3px] border-red-500 bg-red-50 p-4 text-sm text-red-700 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">{error}</div>
       ) : null}
 
       <section
-        className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+        className="border-[3px] border-foreground bg-white p-6 shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
         aria-label="결과물 탭"
         data-testid="result-tabs"
       >
-        <h2 className="text-lg font-semibold text-slate-900">ResultTabs</h2>
-        <p className="mt-1 text-sm text-slate-600">결과 유형별로 콘텐츠를 전환해 확인합니다.</p>
+        <h2 className="text-lg font-black text-foreground">결과 탭</h2>
+        <p className="mt-1 text-sm text-muted-foreground">결과 유형별로 콘텐츠를 전환해 확인합니다.</p>
 
         {resultTypes.length === 0 ? (
-          <p className="mt-4 text-sm text-slate-600">표시할 결과가 아직 없습니다.</p>
+          <p className="mt-4 text-sm text-muted-foreground">표시할 결과가 아직 없습니다.</p>
         ) : (
           <div className="mt-4 flex flex-wrap gap-2">
             {resultTypes.map((resultType) => (
               <button
                 key={resultType}
                 type="button"
-                className={`rounded-full border px-3 py-1 text-sm ${
+                className={`border-[2px] px-3 py-1 text-sm font-bold ${
                   selectedType === resultType
-                    ? "border-blue-300 bg-blue-50 text-blue-700"
-                    : "border-slate-200 bg-white text-slate-700"
+                    ? "border-blue-600 bg-blue-50 text-blue-700"
+                    : "border-foreground bg-white text-foreground"
                 }`}
                 onClick={() => setSelectedType(resultType)}
               >
@@ -301,82 +301,82 @@ export default function TaskResultsPage({ params }: TaskResultsPageProps) {
       </section>
 
       <section
-        className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+        className="border-[3px] border-foreground bg-white p-6 shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
         aria-label="결과 콘텐츠"
         data-testid="result-content"
       >
-        <h2 className="text-lg font-semibold text-slate-900">ResultContent</h2>
-        <p className="mt-1 text-sm text-slate-600">선택한 탭의 최신 버전 콘텐츠를 미리보기합니다.</p>
+        <h2 className="text-lg font-black text-foreground">결과 콘텐츠</h2>
+        <p className="mt-1 text-sm text-muted-foreground">선택한 탭의 최신 버전 콘텐츠를 미리보기합니다.</p>
 
         {selectedResult ? (
-          <pre className="mt-4 max-h-[480px] overflow-auto rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-800 whitespace-pre-wrap">
+          <pre className="mt-4 max-h-[480px] overflow-auto border-[2px] border-foreground bg-gray-50 p-4 text-sm text-foreground whitespace-pre-wrap">
             {selectedResult.content}
           </pre>
         ) : (
-          <p className="mt-4 text-sm text-slate-600">선택된 결과가 없습니다.</p>
+          <p className="mt-4 text-sm text-muted-foreground">선택된 결과가 없습니다.</p>
         )}
       </section>
 
       <section
-        className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+        className="border-[3px] border-foreground bg-white p-6 shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
         aria-label="결과 메타데이터"
         data-testid="result-metadata"
       >
-        <h2 className="text-lg font-semibold text-slate-900">ResultMetadata</h2>
-        <p className="mt-1 text-sm text-slate-600">생성 정보, 품질 점수, 버전 정보를 확인합니다.</p>
+        <h2 className="text-lg font-black text-foreground">결과 메타데이터</h2>
+        <p className="mt-1 text-sm text-muted-foreground">생성 정보, 품질 점수, 버전 정보를 확인합니다.</p>
 
         {selectedResult ? (
-          <dl className="mt-4 grid gap-2 text-sm text-slate-700">
-            <div className="flex justify-between gap-4">
-              <dt className="font-medium">result_type</dt>
+          <dl className="mt-4 grid gap-2 text-sm text-foreground">
+            <div className="flex justify-between gap-4 border-b-[2px] border-dashed border-foreground/20 pb-2">
+              <dt className="font-bold">result_type</dt>
               <dd>{selectedResult.result_type}</dd>
             </div>
-            <div className="flex justify-between gap-4">
-              <dt className="font-medium">agent_id</dt>
+            <div className="flex justify-between gap-4 border-b-[2px] border-dashed border-foreground/20 pb-2">
+              <dt className="font-bold">agent_id</dt>
               <dd>{selectedResult.agent_id}</dd>
             </div>
-            <div className="flex justify-between gap-4">
-              <dt className="font-medium">version</dt>
+            <div className="flex justify-between gap-4 border-b-[2px] border-dashed border-foreground/20 pb-2">
+              <dt className="font-bold">version</dt>
               <dd>v{selectedResult.version}</dd>
             </div>
-            <div className="flex justify-between gap-4">
-              <dt className="font-medium">quality_score</dt>
+            <div className="flex justify-between gap-4 border-b-[2px] border-dashed border-foreground/20 pb-2">
+              <dt className="font-bold">quality_score</dt>
               <dd>{selectedResult.quality_score ?? "-"}</dd>
             </div>
             {selectedResult.quality_score !== null ? (
               <div className="flex justify-end">
-                <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700">
+                <span className="inline-flex items-center border-[2px] border-green-600 bg-green-50 px-2 py-1 text-xs font-bold text-green-700">
                   품질 점수: {selectedResult.quality_score}
                 </span>
               </div>
             ) : null}
-            <div className="flex justify-between gap-4">
-              <dt className="font-medium">created_at</dt>
+            <div className="flex justify-between gap-4 border-b-[2px] border-dashed border-foreground/20 pb-2">
+              <dt className="font-bold">created_at</dt>
               <dd>{formatDateTime(selectedResult.created_at)}</dd>
             </div>
             <div className="space-y-1">
-              <dt className="font-medium">metadata</dt>
-              <dd className="rounded-md border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700">
+              <dt className="font-bold">metadata</dt>
+              <dd className="border-[2px] border-foreground bg-gray-50 p-3 text-xs text-foreground">
                 {JSON.stringify(selectedResult.metadata, null, 2)}
               </dd>
             </div>
           </dl>
         ) : (
-          <p className="mt-4 text-sm text-slate-600">메타데이터를 표시할 결과가 없습니다.</p>
+          <p className="mt-4 text-sm text-muted-foreground">메타데이터를 표시할 결과가 없습니다.</p>
         )}
       </section>
 
       <section
-        className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+        className="border-[3px] border-foreground bg-white p-6 shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
         aria-label="수정 요청"
         data-testid="revision-form"
       >
-        <h2 className="text-lg font-semibold text-slate-900">RevisionForm</h2>
-        <p className="mt-1 text-sm text-slate-600">수정 요청 텍스트를 작성해 다음 작업으로 이어집니다.</p>
+        <h2 className="text-lg font-black text-foreground">수정 요청</h2>
+        <p className="mt-1 text-sm text-muted-foreground">수정 요청 텍스트를 작성해 다음 작업으로 이어집니다.</p>
 
         <form className="mt-4 space-y-3" onSubmit={handleRevisionSubmit}>
           <textarea
-            className="min-h-28 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className="min-h-28 w-full border-[2px] border-foreground px-3 py-2 text-sm"
             placeholder="수정 요청 내용을 입력하세요."
             value={revisionRequest}
             onChange={(event) => setRevisionRequest(event.target.value)}
@@ -389,7 +389,7 @@ export default function TaskResultsPage({ params }: TaskResultsPageProps) {
         </form>
 
         {revisionNotice ? (
-          <p className="mt-3 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-700">{revisionNotice}</p>
+          <p className="mt-3 border-[2px] border-blue-600 bg-blue-50 px-3 py-2 text-sm text-blue-700 font-bold">{revisionNotice}</p>
         ) : null}
       </section>
 

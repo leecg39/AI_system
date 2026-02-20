@@ -95,15 +95,15 @@ function taskStatusLabel(status: string): string {
 
 function taskStatusClass(status: string): string {
   if (status === "completed") {
-    return "border-emerald-200 bg-emerald-50 text-emerald-700";
+    return "border-green-600 bg-green-50 text-green-700";
   }
   if (status === "failed" || status === "cancelled") {
-    return "border-red-200 bg-red-50 text-red-700";
+    return "border-red-500 bg-red-50 text-red-700";
   }
   if (status === "running") {
-    return "border-blue-200 bg-blue-50 text-blue-700";
+    return "border-blue-600 bg-blue-50 text-blue-700";
   }
-  return "border-amber-200 bg-amber-50 text-amber-700";
+  return "border-amber-500 bg-amber-50 text-amber-700";
 }
 
 function runtimeStatusMeta(status: AgentRuntimeStatus): {
@@ -115,34 +115,34 @@ function runtimeStatusMeta(status: AgentRuntimeStatus): {
     return {
       icon: "🟢",
       label: "작업중",
-      className: "border-blue-200 bg-blue-50 text-blue-700",
+      className: "border-blue-600 bg-blue-50 text-blue-700",
     };
   }
   if (status === "completed") {
     return {
       icon: "✅",
       label: "완료",
-      className: "border-emerald-200 bg-emerald-50 text-emerald-700",
+      className: "border-green-600 bg-green-50 text-green-700",
     };
   }
   if (status === "failed") {
     return {
       icon: "🔴",
       label: "오류",
-      className: "border-red-200 bg-red-50 text-red-700",
+      className: "border-red-500 bg-red-50 text-red-700",
     };
   }
   if (status === "cancelled") {
     return {
       icon: "⛔",
       label: "취소",
-      className: "border-slate-300 bg-slate-100 text-slate-700",
+      className: "border-gray-500 bg-gray-100 text-gray-700",
     };
   }
   return {
     icon: "🟡",
     label: "대기",
-    className: "border-amber-200 bg-amber-50 text-amber-700",
+    className: "border-amber-500 bg-amber-50 text-amber-700",
   };
 }
 
@@ -489,8 +489,8 @@ export default function TaskMonitorPage({ params }: TaskMonitorPageProps) {
   if (isLoading) {
     return (
       <div className="space-y-3 py-8" data-testid="task-monitor-loading">
-        <h1 className="text-3xl font-bold text-slate-900">실시간 모니터링</h1>
-        <p className="text-slate-600">작업 상태와 에이전트 로그를 불러오는 중...</p>
+        <h1 className="text-3xl font-black text-foreground">실시간 모니터링</h1>
+        <p className="text-muted-foreground">작업 상태와 에이전트 로그를 불러오는 중...</p>
       </div>
     );
   }
@@ -498,9 +498,9 @@ export default function TaskMonitorPage({ params }: TaskMonitorPageProps) {
   if (!task) {
     return (
       <div className="space-y-4 py-8" data-testid="task-monitor-error">
-        <h1 className="text-3xl font-bold text-slate-900">실시간 모니터링</h1>
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
-          <p className="font-medium">작업 정보를 불러오지 못했습니다.</p>
+        <h1 className="text-3xl font-black text-foreground">실시간 모니터링</h1>
+        <div className="border-[3px] border-red-500 bg-red-50 p-4 text-red-700 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
+          <p className="font-bold">작업 정보를 불러오지 못했습니다.</p>
           <p className="text-sm">{error ?? "잠시 후 다시 시도해 주세요."}</p>
         </div>
         <Button type="button" onClick={() => void loadMonitor()}>
@@ -512,28 +512,28 @@ export default function TaskMonitorPage({ params }: TaskMonitorPageProps) {
 
   return (
     <div className="space-y-6 py-4" data-testid="task-monitor-page">
-      <header className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+      <header className="flex flex-col gap-3 border-[3px] border-foreground bg-white p-6 shadow-[4px_4px_0_0_rgba(0,0,0,1)] md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">실시간 모니터링</h1>
-          <p className="mt-1 text-sm text-slate-600">
+          <h1 className="text-3xl font-black text-foreground">실시간 모니터링</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             {task.team_name} · Task ID: <span className="font-mono">{task.id}</span>
           </p>
-          <p className="mt-1 text-xs text-slate-500">시작 시각: {formatDateTime(task.started_at ?? task.created_at)}</p>
+          <p className="mt-1 text-xs text-muted-foreground">시작 시각: {formatDateTime(task.started_at ?? task.created_at)}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <span
-            className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium ${taskStatusClass(task.status)}`}
+            className={`inline-flex items-center border-[2px] px-3 py-1 text-xs font-bold ${taskStatusClass(task.status)}`}
           >
             상태: {taskStatusLabel(task.status)}
           </span>
           <span
-            className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium ${
+            className={`inline-flex items-center border-[2px] px-3 py-1 text-xs font-bold ${
               streamStatus === "connected"
-                ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                ? "border-green-600 bg-green-50 text-green-700"
                 : streamStatus === "connecting"
-                  ? "border-blue-200 bg-blue-50 text-blue-700"
-                  : "border-slate-200 bg-slate-100 text-slate-600"
+                  ? "border-blue-600 bg-blue-50 text-blue-700"
+                  : "border-foreground bg-gray-100 text-muted-foreground"
             }`}
           >
             WS: {streamStatus === "connected" ? "연결됨" : streamStatus === "connecting" ? "연결 중" : "오프라인"}
@@ -542,25 +542,25 @@ export default function TaskMonitorPage({ params }: TaskMonitorPageProps) {
       </header>
 
       {error ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>
+        <div className="border-[3px] border-red-500 bg-red-50 p-4 text-sm text-red-700 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">{error}</div>
       ) : null}
       {streamError ? (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700">{streamError}</div>
+        <div className="border-[3px] border-amber-500 bg-amber-50 p-4 text-sm text-amber-700 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">{streamError}</div>
       ) : null}
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm" aria-label="전체 진행률" data-testid="overall-progress">
+      <section className="border-[3px] border-foreground bg-white p-6 shadow-[4px_4px_0_0_rgba(0,0,0,1)]" aria-label="전체 진행률" data-testid="overall-progress">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">전체 진행률</h2>
-            <p className="mt-1 text-sm text-slate-600">작업 전체의 진행 상태와 완료 여부를 보여줍니다.</p>
+            <h2 className="text-lg font-black text-foreground">전체 진행률</h2>
+            <p className="mt-1 text-sm text-muted-foreground">작업 전체의 진행 상태와 완료 여부를 보여줍니다.</p>
           </div>
-          <p className="text-2xl font-bold text-slate-900">{normalizeProgress(task.progress)}%</p>
+          <p className="text-2xl font-black text-foreground">{normalizeProgress(task.progress)}%</p>
         </div>
-        <div className="mt-4 h-3 overflow-hidden rounded-full bg-slate-100">
+        <div className="mt-4 h-3 overflow-hidden bg-gray-200 border-[2px] border-foreground">
           <div
             className={`h-full transition-all duration-300 ${
               task.status === "completed"
-                ? "bg-emerald-500"
+                ? "bg-green-500"
                 : task.status === "failed" || task.status === "cancelled"
                   ? "bg-red-500"
                   : "bg-blue-500"
@@ -570,10 +570,10 @@ export default function TaskMonitorPage({ params }: TaskMonitorPageProps) {
         </div>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm" aria-label="에이전트 상태" data-testid="agent-status-grid">
+      <section className="border-[3px] border-foreground bg-white p-6 shadow-[4px_4px_0_0_rgba(0,0,0,1)]" aria-label="에이전트 상태" data-testid="agent-status-grid">
         <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold text-slate-900">에이전트 상태</h2>
-          <p className="text-xs text-slate-500">🟢작업중 · 🟡대기 · ✅완료 · 🔴오류</p>
+          <h2 className="text-lg font-black text-foreground">에이전트 상태</h2>
+          <p className="text-xs text-muted-foreground">🟢작업중 · 🟡대기 · ✅완료 · 🔴오류</p>
         </div>
 
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -587,36 +587,36 @@ export default function TaskMonitorPage({ params }: TaskMonitorPageProps) {
             const meta = runtimeStatusMeta(runtime.status);
 
             return (
-              <article key={agent.id} className="rounded-lg border border-slate-200 p-4">
+              <article key={agent.id} className="border-[3px] border-foreground p-4 shadow-[3px_3px_0_0_rgba(0,0,0,1)]">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h3 className="text-sm font-semibold text-slate-900">{agent.name}</h3>
-                    <p className="text-xs text-slate-500">
+                    <h3 className="text-sm font-black text-foreground">{agent.name}</h3>
+                    <p className="text-xs text-muted-foreground">
                       {agent.role} · {agent.layer}
                     </p>
                   </div>
-                  <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs ${meta.className}`}>
+                  <span className={`inline-flex items-center gap-1 border-[2px] px-2 py-1 text-xs font-bold ${meta.className}`}>
                     <span aria-hidden>{meta.icon}</span>
                     {meta.label}
                   </span>
                 </div>
 
-                <p className="mt-3 line-clamp-2 text-xs text-slate-600">{runtime.message}</p>
-                <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
-                  <div className="h-full bg-slate-700 transition-all duration-300" style={{ width: `${runtime.progress}%` }} />
+                <p className="mt-3 line-clamp-2 text-xs text-muted-foreground">{runtime.message}</p>
+                <div className="mt-3 h-2 overflow-hidden bg-gray-200 border-[2px] border-foreground">
+                  <div className="h-full bg-foreground transition-all duration-300" style={{ width: `${runtime.progress}%` }} />
                 </div>
-                <p className="mt-2 text-right text-xs text-slate-500">{runtime.progress}%</p>
+                <p className="mt-2 text-right text-xs text-muted-foreground">{runtime.progress}%</p>
               </article>
             );
           })}
         </div>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm" aria-label="로그 스트림" data-testid="log-stream">
+      <section className="border-[3px] border-foreground bg-white p-6 shadow-[4px_4px_0_0_rgba(0,0,0,1)]" aria-label="로그 스트림" data-testid="log-stream">
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">실시간 로그 스트림</h2>
-            <p className="text-sm text-slate-600">에이전트 로그를 시간 순서대로 확인할 수 있습니다.</p>
+            <h2 className="text-lg font-black text-foreground">실시간 로그 스트림</h2>
+            <p className="text-sm text-muted-foreground">에이전트 로그를 시간 순서대로 확인할 수 있습니다.</p>
           </div>
           <Button type="button" variant="outline" onClick={() => setIsLogCollapsed((current) => !current)}>
             {isLogCollapsed ? "로그 펼치기" : "로그 접기"}
@@ -624,16 +624,16 @@ export default function TaskMonitorPage({ params }: TaskMonitorPageProps) {
         </div>
 
         {visibleLogs.length === 0 ? (
-          <p className="text-sm text-slate-600">표시할 로그가 없습니다.</p>
+          <p className="text-sm text-muted-foreground">표시할 로그가 없습니다.</p>
         ) : (
           <ul className="space-y-2">
             {visibleLogs.map((log) => (
-              <li key={log.id} className="rounded-md border border-slate-200 px-3 py-2 text-sm">
+              <li key={log.id} className="border-[2px] border-foreground px-3 py-2 text-sm">
                 <div className="flex items-center justify-between gap-3">
-                  <p className="font-medium text-slate-800">{log.message}</p>
-                  <span className="text-xs text-slate-500">{formatDateTime(log.created_at)}</span>
+                  <p className="font-bold text-foreground">{log.message}</p>
+                  <span className="text-xs text-muted-foreground">{formatDateTime(log.created_at)}</span>
                 </div>
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                   agent: {log.agent_id} · status: {log.status} · progress: {normalizeProgress(log.progress)}%
                 </p>
               </li>

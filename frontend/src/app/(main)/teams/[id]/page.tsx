@@ -91,8 +91,8 @@ export default function TeamDetailPage({ params }: TeamDetailPageProps) {
   if (isLoading) {
     return (
       <div className="space-y-3 py-8" data-testid="team-detail-loading">
-        <h1 className="text-3xl font-bold text-slate-900">팀 상세</h1>
-        <p className="text-slate-600">팀 정보를 불러오는 중...</p>
+        <h1 className="text-3xl font-black text-foreground">팀 상세</h1>
+        <p className="text-muted-foreground">팀 정보를 불러오는 중...</p>
       </div>
     );
   }
@@ -100,9 +100,9 @@ export default function TeamDetailPage({ params }: TeamDetailPageProps) {
   if (error || !team) {
     return (
       <div className="space-y-4 py-8" data-testid="team-detail-error">
-        <h1 className="text-3xl font-bold text-slate-900">팀 상세</h1>
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
-          <p className="font-medium">팀 정보를 불러오지 못했습니다.</p>
+        <h1 className="text-3xl font-black text-foreground">팀 상세</h1>
+        <div className="border-[3px] border-red-500 bg-red-50 p-4 text-red-700 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
+          <p className="font-bold">팀 정보를 불러오지 못했습니다.</p>
           <p className="text-sm">{error || "알 수 없는 오류가 발생했습니다."}</p>
         </div>
         <Button type="button" onClick={() => void loadTeamDetail()}>

@@ -5,14 +5,21 @@ from typing import Any, Callable, Dict, List, Optional, Protocol, Union
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+
 from app.api.ws import stream_manager
 from app.core.celery_app import celery_app
-from app.db.session import AsyncSessionLocal
+from app.core.config import settings
 from app.models.agent import Agent
 from app.models.task import Task, TaskStatusEnum
 from app.models.task_log import TaskLog, TaskLogStatusEnum
 from app.models.task_result import TaskResult
 from app.services.ai_service import AIService
+
+
+def _create_session_factory() -> async_sessionmaker[AsyncSession]:
+    engine = create_async_engine(settings.DATABASE_URL, echo=False)
+    return async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 LAYER_ORDER = ["orchestration", "research", "execution", "quality"]
 
@@ -168,7 +175,7 @@ async def execute_task_async(
     session_factory: Optional[Callable[[], Any]] = None,
 ) -> dict[str, object]:
     service = ai_service or AIService()
-    factory = session_factory or AsyncSessionLocal
+    factory = session_factory or _create_session_factory()
 
     async with factory() as session:
         task = await session.get(Task, task_id)

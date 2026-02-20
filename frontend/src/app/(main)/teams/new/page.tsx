@@ -193,24 +193,24 @@ export default function TeamCreatePage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-3 py-8" data-testid="team-create-loading">
-        <h1 className="text-3xl font-bold text-slate-900">팀 생성</h1>
-        <p className="text-slate-600">템플릿을 불러오는 중...</p>
+      <div className="space-y-4 py-8" data-testid="team-create-loading">
+        <h1 className="text-3xl font-black text-foreground">팀 생성</h1>
+        <p className="text-muted-foreground">템플릿을 불러오는 중...</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-6 py-4">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-bold text-slate-900">팀 생성</h1>
-        <p className="text-slate-600">템플릿을 선택하고 팀 구성원을 커스터마이즈해 팀을 생성하세요.</p>
+      <header className="space-y-1">
+        <h1 className="text-3xl font-black text-foreground">팀 생성</h1>
+        <p className="text-muted-foreground">템플릿을 선택하고 팀 구성원을 커스터마이즈해 팀을 생성하세요.</p>
       </header>
 
       <StepIndicator currentStep={step} />
 
       {error ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>
+        <div className="border-[3px] border-red-500 bg-red-50 p-4 text-sm font-bold text-red-700 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">{error}</div>
       ) : null}
 
       {step === 1 ? (
@@ -236,7 +236,7 @@ export default function TeamCreatePage() {
             canProceed={canProceedToConfirm}
           />
           <div className="flex justify-start">
-            <Button type="button" variant="outline" onClick={() => setStep(1)}>
+            <Button type="button" variant="outline" onClick={() => setStep(1)} className="border-[2px] border-foreground font-bold shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
               템플릿 다시 선택
             </Button>
           </div>

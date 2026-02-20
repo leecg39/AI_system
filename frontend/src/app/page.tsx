@@ -1,14 +1,20 @@
-// @TASK P0-T0.2 - Frontend 초기화: Home Page
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/stores/auth';
 
 export default function HomePage() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm">
-        <h1 className="text-4xl font-bold mb-4">AI System</h1>
-        <p className="text-lg text-muted-foreground">
-          Team & Task Management Platform
-        </p>
-      </div>
-    </main>
-  );
+  const router = useRouter();
+  const token = useAuthStore((s) => s.token);
+
+  useEffect(() => {
+    if (token) {
+      router.replace('/dashboard');
+    } else {
+      router.replace('/login');
+    }
+  }, [token, router]);
+
+  return null;
 }
