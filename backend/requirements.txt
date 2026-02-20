@@ -16,7 +16,7 @@ websockets
 python-multipart
 aiofiles
 httpx
-anthropic
+openai
 email-validator
 pytest
 pytest-asyncio

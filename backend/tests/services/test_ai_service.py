@@ -1,80 +1,90 @@
-from typing import Any, AsyncIterator
+from typing import Any, AsyncIterator, Optional
 
 import pytest
 
 from app.services.ai_service import AIService, AIServiceError, resolve_model_name
 
 
-class _TextBlock:
-    def __init__(self, text: str) -> None:
-        self.type = "text"
-        self.text = text
+class _Message:
+    def __init__(self, content: str) -> None:
+        self.content = content
+
+
+class _Choice:
+    def __init__(self, message: _Message) -> None:
+        self.message = message
 
 
 class _Usage:
-    def __init__(self, input_tokens: int, output_tokens: int) -> None:
-        self.input_tokens = input_tokens
-        self.output_tokens = output_tokens
+    def __init__(self, prompt_tokens: int, completion_tokens: int) -> None:
+        self.prompt_tokens = prompt_tokens
+        self.completion_tokens = completion_tokens
 
 
-class _CreateResponse:
-    def __init__(self, text: str, in_tokens: int = 10, out_tokens: int = 25) -> None:
-        self.content = [_TextBlock(text)]
-        self.usage = _Usage(in_tokens, out_tokens)
+class _ChatResponse:
+    def __init__(self, text: str, prompt_tok: int = 10, completion_tok: int = 25) -> None:
+        self.choices = [_Choice(_Message(text))]
+        self.usage = _Usage(prompt_tok, completion_tok)
+
+
+class _Delta:
+    def __init__(self, content: Optional[str]) -> None:
+        self.content = content
+
+
+class _StreamChoice:
+    def __init__(self, delta: _Delta) -> None:
+        self.delta = delta
+
+
+class _StreamChunk:
+    def __init__(self, content: Optional[str]) -> None:
+        self.choices = [_StreamChoice(_Delta(content))]
 
 
 class _FakeStream:
     def __init__(self, chunks: list[str]) -> None:
         self._chunks = chunks
 
-    async def __aenter__(self) -> "_FakeStream":
-        return self
-
-    async def __aexit__(self, exc_type, exc, tb) -> None:
-        return None
-
-    @property
-    def text_stream(self) -> AsyncIterator[str]:
-        async def _iterator() -> AsyncIterator[str]:
-            for chunk in self._chunks:
-                yield chunk
-
-        return _iterator()
+    async def __aiter__(self):
+        for chunk in self._chunks:
+            yield _StreamChunk(chunk)
 
 
-class _FakeMessages:
+class _FakeCompletions:
     def __init__(self) -> None:
         self.create_calls: list[dict[str, Any]] = []
-        self.stream_calls: list[dict[str, Any]] = []
         self.raise_error = False
+        self._stream_mode = False
 
-    async def create(self, **kwargs: Any) -> _CreateResponse:
+    async def create(self, **kwargs: Any) -> Any:
         self.create_calls.append(kwargs)
         if self.raise_error:
             raise RuntimeError("boom")
-        return _CreateResponse("generated output")
+        if kwargs.get("stream"):
+            return _FakeStream(["A", "B", "C"])
+        return _ChatResponse("generated output")
 
-    def stream(self, **kwargs: Any) -> _FakeStream:
-        self.stream_calls.append(kwargs)
-        if self.raise_error:
-            raise RuntimeError("stream boom")
-        return _FakeStream(["A", "B", "C"])
+
+class _FakeChat:
+    def __init__(self) -> None:
+        self.completions = _FakeCompletions()
 
 
 class _FakeClient:
     def __init__(self) -> None:
-        self.messages = _FakeMessages()
+        self.chat = _FakeChat()
 
 
 def test_resolve_model_name_routes_supported_models() -> None:
-    assert resolve_model_name("opus") == "claude-3-opus-latest"
-    assert resolve_model_name("sonnet") == "claude-3-5-sonnet-latest"
-    assert resolve_model_name("haiku") == "claude-3-5-haiku-latest"
+    assert resolve_model_name("opus") == "gpt-4o"
+    assert resolve_model_name("sonnet") == "gpt-4o"
+    assert resolve_model_name("haiku") == "gpt-4o-mini"
 
 
-def test_resolve_model_name_falls_back_to_sonnet() -> None:
-    assert resolve_model_name(None) == "claude-3-5-sonnet-latest"
-    assert resolve_model_name("unknown") == "claude-3-5-sonnet-latest"
+def test_resolve_model_name_falls_back_to_default() -> None:
+    assert resolve_model_name(None) == "gpt-4o"
+    assert resolve_model_name("unknown") == "gpt-4o"
 
 
 @pytest.mark.anyio
@@ -93,19 +103,22 @@ async def test_run_agent_prompt_uses_model_routing_and_returns_payload() -> None
     )
 
     assert response["content"] == "generated output"
-    assert response["model"] == "claude-3-5-haiku-latest"
+    assert response["model"] == "gpt-4o-mini"
     assert response["usage"] == {"input_tokens": 10, "output_tokens": 25}
 
-    create_call = fake_client.messages.create_calls[0]
-    assert create_call["model"] == "claude-3-5-haiku-latest"
+    create_call = fake_client.chat.completions.create_calls[0]
+    assert create_call["model"] == "gpt-4o-mini"
     assert create_call["temperature"] == 0.3
     assert create_call["max_tokens"] == 128
+    # Verify system message is first in messages list
+    assert create_call["messages"][0]["role"] == "system"
+    assert create_call["messages"][1]["role"] == "user"
 
 
 @pytest.mark.anyio
 async def test_run_agent_prompt_raises_service_error_on_client_failure() -> None:
     fake_client = _FakeClient()
-    fake_client.messages.raise_error = True
+    fake_client.chat.completions.raise_error = True
     service = AIService(client=fake_client)
 
     with pytest.raises(AIServiceError):
@@ -136,14 +149,15 @@ async def test_stream_agent_prompt_yields_chunks() -> None:
         chunks.append(chunk)
 
     assert chunks == ["A", "B", "C"]
-    stream_call = fake_client.messages.stream_calls[0]
-    assert stream_call["model"] == "claude-3-opus-latest"
+    stream_call = fake_client.chat.completions.create_calls[0]
+    assert stream_call["model"] == "gpt-4o"
+    assert stream_call["stream"] is True
 
 
 @pytest.mark.anyio
 async def test_stream_agent_prompt_raises_service_error_on_stream_failure() -> None:
     fake_client = _FakeClient()
-    fake_client.messages.raise_error = True
+    fake_client.chat.completions.raise_error = True
     service = AIService(client=fake_client)
 
     with pytest.raises(AIServiceError):

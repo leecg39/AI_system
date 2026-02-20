@@ -21,11 +21,11 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
-    # Claude API
-    ANTHROPIC_API_KEY: str = ""
+    # OpenAI API
+    OPENAI_API_KEY: str = ""
 
     # CORS
-    CORS_ORIGINS: list[str] = ["http://localhost:3000"]
+    CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:3002", "http://localhost:80", "http://localhost"]
 
     # App
     APP_NAME: str = "AI System API"

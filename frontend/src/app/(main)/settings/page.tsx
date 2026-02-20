@@ -260,8 +260,8 @@ export default function SettingsPage() {
   if (isLoading) {
     return (
       <div className="space-y-3 py-8" data-testid="settings-loading">
-        <h1 className="text-3xl font-bold text-slate-900">설정</h1>
-        <p className="text-slate-600">사용자 설정 정보를 불러오는 중...</p>
+        <h1 className="text-3xl font-black text-foreground">설정</h1>
+        <p className="text-muted-foreground">사용자 설정 정보를 불러오는 중...</p>
       </div>
     );
   }
@@ -269,10 +269,10 @@ export default function SettingsPage() {
   if (!user) {
     return (
       <div className="space-y-4 py-8" data-testid="settings-error">
-        <h1 className="text-3xl font-bold text-slate-900">설정</h1>
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
-          <p className="font-medium">설정 정보를 불러오지 못했습니다.</p>
-          <p className="text-sm">{error ?? "잠시 후 다시 시도해 주세요."}</p>
+        <h1 className="text-3xl font-black text-foreground">설정</h1>
+        <div className="border-[3px] border-red-500 bg-red-50 p-4 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
+          <p className="font-bold text-red-700">설정 정보를 불러오지 못했습니다.</p>
+          <p className="text-sm text-red-700">{error ?? "잠시 후 다시 시도해 주세요."}</p>
         </div>
         <Button type="button" onClick={() => void loadProfile()}>
           다시 시도
@@ -284,32 +284,32 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 py-4" data-testid="settings-page">
       <header className="space-y-2">
-        <h1 className="text-3xl font-bold text-slate-900">설정</h1>
-        <p className="text-slate-600">프로필, API 키, 구독, 알림, 데이터 관리 설정을 조정합니다.</p>
+        <h1 className="text-3xl font-black text-foreground">설정</h1>
+        <p className="text-muted-foreground">프로필, API 키, 구독, 알림, 데이터 관리 설정을 조정합니다.</p>
       </header>
 
-      {error ? <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
+      {error ? <div className="border-[3px] border-red-500 bg-red-50 p-3 text-sm font-bold text-red-700 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">{error}</div> : null}
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm" data-testid="profile-section">
-        <h2 className="text-lg font-semibold text-slate-900">ProfileSection</h2>
-        <p className="mt-1 text-sm text-slate-600">이름과 계정 정보를 확인하고 프로필을 수정합니다.</p>
+      <section className="border-[3px] border-foreground bg-white p-6 shadow-[4px_4px_0_0_rgba(0,0,0,1)]" data-testid="profile-section">
+        <h2 className="text-lg font-black text-foreground">프로필</h2>
+        <p className="mt-1 text-sm text-muted-foreground">이름과 계정 정보를 확인하고 프로필을 수정합니다.</p>
 
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           <label className="space-y-1 text-sm">
-            <span className="font-medium text-slate-700">이름</span>
+            <span className="font-bold text-foreground">이름</span>
             <input
               type="text"
-              className="w-full rounded-md border border-slate-300 px-3 py-2"
+              className="w-full border-[2px] border-foreground px-3 py-2 font-medium"
               value={nameInput}
               onChange={(event) => setNameInput(event.target.value)}
             />
           </label>
 
           <label className="space-y-1 text-sm">
-            <span className="font-medium text-slate-700">이메일</span>
+            <span className="font-bold text-foreground">이메일</span>
             <input
               type="email"
-              className="w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-slate-500"
+              className="w-full border-[2px] border-foreground bg-slate-50 px-3 py-2 font-medium text-slate-500"
               value={user.email}
               readOnly
             />
@@ -323,69 +323,69 @@ export default function SettingsPage() {
         </div>
 
         {profileNotice ? (
-          <p className="mt-3 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-700">{profileNotice}</p>
+          <p className="mt-3 border-[2px] border-blue-500 bg-blue-50 px-3 py-2 text-sm font-bold text-blue-700">{profileNotice}</p>
         ) : null}
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm" data-testid="api-key-section">
-        <h2 className="text-lg font-semibold text-slate-900">ApiKeySection</h2>
-        <p className="mt-1 text-sm text-slate-600">Claude API 키를 마스킹 형태로 저장합니다.</p>
+      <section className="border-[3px] border-foreground bg-white p-6 shadow-[4px_4px_0_0_rgba(0,0,0,1)]" data-testid="api-key-section">
+        <h2 className="text-lg font-black text-foreground">API 키</h2>
+        <p className="mt-1 text-sm text-muted-foreground">OpenAI API 키를 마스킹 형태로 저장합니다.</p>
 
         <label className="mt-4 block space-y-1 text-sm">
-          <span className="font-medium text-slate-700">Claude API Key</span>
+          <span className="font-bold text-foreground">OpenAI API Key</span>
           <input
             type="password"
-            className="w-full rounded-md border border-slate-300 px-3 py-2"
+            className="w-full border-[2px] border-foreground px-3 py-2 font-medium"
             placeholder="sk-ant-..."
             value={apiKeyInput}
             onChange={(event) => setApiKeyInput(event.target.value)}
           />
         </label>
 
-        <p className="mt-2 text-xs text-slate-500">저장된 키: {apiKeyMasked ?? "없음"}</p>
+        <p className="mt-2 text-xs text-muted-foreground">저장된 키: {apiKeyMasked ?? "없음"}</p>
 
         <div className="mt-4 flex justify-end">
-          <Button type="button" variant="outline" onClick={handleSaveApiKey} disabled={isSavingApiKey}>
+          <Button type="button" variant="outline" onClick={handleSaveApiKey} disabled={isSavingApiKey} className="border-[2px] border-foreground font-bold shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
             {isSavingApiKey ? "저장 중..." : "API 키 저장"}
           </Button>
         </div>
 
         {apiKeyNotice ? (
-          <p className="mt-3 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-700">{apiKeyNotice}</p>
+          <p className="mt-3 border-[2px] border-blue-500 bg-blue-50 px-3 py-2 text-sm font-bold text-blue-700">{apiKeyNotice}</p>
         ) : null}
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm" data-testid="subscription-section">
-        <h2 className="text-lg font-semibold text-slate-900">SubscriptionSection</h2>
-        <p className="mt-1 text-sm text-slate-600">현재 플랜과 API 사용량을 확인합니다.</p>
+      <section className="border-[3px] border-foreground bg-white p-6 shadow-[4px_4px_0_0_rgba(0,0,0,1)]" data-testid="subscription-section">
+        <h2 className="text-lg font-black text-foreground">구독 플랜</h2>
+        <p className="mt-1 text-sm text-muted-foreground">현재 플랜과 API 사용량을 확인합니다.</p>
 
-        <dl className="mt-4 grid gap-2 text-sm text-slate-700">
-          <div className="flex justify-between gap-3">
-            <dt className="font-medium">플랜</dt>
+        <dl className="mt-4 grid gap-2 text-sm text-foreground">
+          <div className="flex justify-between gap-3 border-b-[2px] border-dashed border-foreground/20 pb-2">
+            <dt className="font-bold">플랜</dt>
             <dd>
-              <span className={`inline-flex rounded-full border px-2 py-1 text-xs font-medium ${planBadgeClassName}`}>
+              <span className={`inline-flex border-[2px] px-2 py-1 text-xs font-bold ${planBadgeClassName}`}>
                 {planLabel(user.plan)}
               </span>
             </dd>
           </div>
-          <div className="flex justify-between gap-3">
-            <dt className="font-medium">API 사용량</dt>
+          <div className="flex justify-between gap-3 border-b-[2px] border-dashed border-foreground/20 pb-2">
+            <dt className="font-bold">API 사용량</dt>
             <dd>{user.api_usage_count.toLocaleString()} 회</dd>
           </div>
-          <div className="flex justify-between gap-3">
-            <dt className="font-medium">가입일</dt>
+          <div className="flex justify-between gap-3 border-b-[2px] border-dashed border-foreground/20 pb-2">
+            <dt className="font-bold">가입일</dt>
             <dd>{new Date(user.created_at).toLocaleDateString("ko-KR")}</dd>
           </div>
         </dl>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm" data-testid="notification-section">
-        <h2 className="text-lg font-semibold text-slate-900">NotificationSection</h2>
-        <p className="mt-1 text-sm text-slate-600">작업 완료/오류/주간 리포트 알림 여부를 설정합니다.</p>
+      <section className="border-[3px] border-foreground bg-white p-6 shadow-[4px_4px_0_0_rgba(0,0,0,1)]" data-testid="notification-section">
+        <h2 className="text-lg font-black text-foreground">알림 설정</h2>
+        <p className="mt-1 text-sm text-muted-foreground">작업 완료/오류/주간 리포트 알림 여부를 설정합니다.</p>
 
         <div className="mt-4 space-y-3 text-sm">
           <label className="flex items-center justify-between gap-3">
-            <span>작업 완료 알림</span>
+            <span className="font-bold">작업 완료 알림</span>
             <input
               type="checkbox"
               checked={notifications.taskCompleted}
@@ -399,7 +399,7 @@ export default function SettingsPage() {
           </label>
 
           <label className="flex items-center justify-between gap-3">
-            <span>오류 발생 알림</span>
+            <span className="font-bold">오류 발생 알림</span>
             <input
               type="checkbox"
               checked={notifications.errorAlert}
@@ -413,7 +413,7 @@ export default function SettingsPage() {
           </label>
 
           <label className="flex items-center justify-between gap-3">
-            <span>주간 리포트 알림</span>
+            <span className="font-bold">주간 리포트 알림</span>
             <input
               type="checkbox"
               checked={notifications.weeklyReport}
@@ -428,31 +428,31 @@ export default function SettingsPage() {
         </div>
 
         <div className="mt-4 flex justify-end">
-          <Button type="button" variant="outline" onClick={handleSaveNotifications} disabled={isSavingNotifications}>
+          <Button type="button" variant="outline" onClick={handleSaveNotifications} disabled={isSavingNotifications} className="border-[2px] border-foreground font-bold shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
             {isSavingNotifications ? "저장 중..." : "알림 설정 저장"}
           </Button>
         </div>
 
         {notificationNotice ? (
-          <p className="mt-3 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-700">{notificationNotice}</p>
+          <p className="mt-3 border-[2px] border-blue-500 bg-blue-50 px-3 py-2 text-sm font-bold text-blue-700">{notificationNotice}</p>
         ) : null}
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm" data-testid="data-management-section">
-        <h2 className="text-lg font-semibold text-slate-900">DataManagementSection</h2>
-        <p className="mt-1 text-sm text-slate-600">작업 이력 내보내기 및 정리 기능을 제공합니다.</p>
+      <section className="border-[3px] border-foreground bg-white p-6 shadow-[4px_4px_0_0_rgba(0,0,0,1)]" data-testid="data-management-section">
+        <h2 className="text-lg font-black text-foreground">데이터 관리</h2>
+        <p className="mt-1 text-sm text-muted-foreground">작업 이력 내보내기 및 정리 기능을 제공합니다.</p>
 
         <div className="mt-4 flex flex-wrap justify-end gap-2">
-          <Button type="button" variant="outline" onClick={() => void handleExportHistory()} disabled={isExporting}>
+          <Button type="button" variant="outline" onClick={() => void handleExportHistory()} disabled={isExporting} className="border-[2px] border-foreground font-bold shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
             {isExporting ? "내보내는 중..." : "작업 이력 내보내기"}
           </Button>
-          <Button type="button" variant="outline" onClick={handleDeleteHistory} disabled={isDeleting}>
+          <Button type="button" variant="outline" onClick={handleDeleteHistory} disabled={isDeleting} className="border-[2px] border-foreground font-bold shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
             {isDeleting ? "삭제 중..." : "작업 이력 삭제"}
           </Button>
         </div>
 
         {dataNotice ? (
-          <p className="mt-3 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-700">{dataNotice}</p>
+          <p className="mt-3 border-[2px] border-blue-500 bg-blue-50 px-3 py-2 text-sm font-bold text-blue-700">{dataNotice}</p>
         ) : null}
       </section>
     </div>
