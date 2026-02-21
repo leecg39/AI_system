@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
 import { getDashboardStats } from "@/services/dashboard";
 import { listTeams } from "@/services/teams";
 import type { DashboardStats } from "@/types/dashboard";
@@ -67,23 +68,7 @@ export default function DashboardPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="space-y-4 py-8">
-        <h1 className="text-3xl font-black text-foreground">대시보드</h1>
-        <div className="grid gap-4 md:grid-cols-3">
-          {[1, 2, 3].map((i) => (
-            <Card key={i} className="animate-pulse">
-              <CardHeader className="pb-2">
-                <div className="h-4 w-24 bg-muted rounded"></div>
-              </CardHeader>
-              <CardContent>
-                <div className="h-8 w-16 bg-muted rounded"></div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   if (error) {

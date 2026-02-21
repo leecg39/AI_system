@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { SettingsSkeleton } from "@/components/skeletons/SettingsSkeleton";
 import { listTasks } from "@/services/tasks";
 import { getCurrentUserProfile, updateCurrentUserProfile } from "@/services/users";
 import type { UserProfile } from "@/types/user";
@@ -258,12 +259,7 @@ export default function SettingsPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="space-y-3 py-8" data-testid="settings-loading">
-        <h1 className="text-3xl font-black text-foreground">설정</h1>
-        <p className="text-muted-foreground">사용자 설정 정보를 불러오는 중...</p>
-      </div>
-    );
+    return <SettingsSkeleton />;
   }
 
   if (!user) {
