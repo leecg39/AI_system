@@ -4,14 +4,46 @@
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.api import ws
 from app.api.v1.endpoints import api_v1_router
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
+
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Middleware to add security headers to all responses."""
+
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+
+        # Basic security headers (always applied)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+
+        # Content Security Policy
+        csp = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
+            "style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data: https:; "
+            "font-src 'self' data:; "
+            "connect-src 'self'"
+        )
+        response.headers["Content-Security-Policy"] = csp
+
+        # HSTS (only in production over HTTPS)
+        if settings.is_production:
+            response.headers["Strict-Transport-Security"] = (
+                "max-age=31536000; includeSubDomains"
+            )
+
+        return response
 
 
 @asynccontextmanager
@@ -46,7 +78,17 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
+# Security headers middleware
+app.add_middleware(SecurityHeadersMiddleware)
+
 # CORS middleware - restricted to configured origins
+# Warn if wildcard CORS is used in production
+if settings.is_production and "*" in settings.CORS_ORIGINS:
+    logger.warning(
+        "WARNING: Wildcard CORS (*) detected in production environment. "
+        "This is a security risk. Please configure explicit origins."
+    )
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
