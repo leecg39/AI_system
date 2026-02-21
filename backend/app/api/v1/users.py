@@ -35,3 +35,14 @@ async def update_current_user_profile(
     await db.commit()
     await db.refresh(current_user)
     return current_user
+
+
+@router.delete("/me", status_code=204)
+async def delete_current_user_account(
+    current_user: CurrentUser,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Delete current user's account and all associated data."""
+    await db.delete(current_user)
+    await db.commit()
+    return None

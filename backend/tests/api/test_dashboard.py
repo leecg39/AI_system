@@ -195,6 +195,7 @@ class TestDashboardStats:
             updated_at=datetime.utcnow(),
         )
         db_session.add(other_user)
+        await db_session.commit()
 
         other_team = Team(
             id=str(uuid.uuid4()),
@@ -206,6 +207,7 @@ class TestDashboardStats:
             updated_at=datetime.utcnow(),
         )
         db_session.add(other_team)
+        await db_session.commit()
 
         other_task = Task(
             id=str(uuid.uuid4()),

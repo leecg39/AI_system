@@ -69,6 +69,14 @@ async def db_engine():
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )
+
+    # Enable foreign key constraints for SQLite
+    @event.listens_for(engine.sync_engine, "connect")
+    def set_sqlite_pragma(dbapi_conn, connection_record):
+        cursor = dbapi_conn.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield engine

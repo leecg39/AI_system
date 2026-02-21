@@ -31,7 +31,7 @@ class Task(Base):
         String(36), ForeignKey("teams.id"), index=True, nullable=False
     )
     user_id: Mapped[str] = mapped_column(
-        String(36), ForeignKey("users.id"), index=True, nullable=False
+        String(36), ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
     )
     type: Mapped[str] = mapped_column(String(255), nullable=False)
     input: Mapped[dict] = mapped_column(JSONB, default=dict, nullable=False)
