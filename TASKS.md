@@ -1,7 +1,7 @@
-# TASKS.md - AI Agent Team Platform
+# TASKS.md - AI Agent Team Platform (v2: 코드 분석 기반 재생성)
 
-> Domain-Guarded Task Structure v2.0
-> "화면이 주도하되, 도메인이 방어한다"
+> 코드 분석 기반 개선 태스크 구조
+> 기존 45개 태스크 완료 후, 실제 코드 동작 분석으로 도출된 개선/누락 항목
 
 ---
 
@@ -9,731 +9,431 @@
 
 ```mermaid
 flowchart TD
-    subgraph P0 [Phase 0: Project Setup]
-        T01[P0-T0.1: 프로젝트 초기화]
-        T02[P0-T0.2: Frontend 초기화]
-        T03[P0-T0.3: Backend 초기화]
-        T04[P0-T0.4: DB 초기화]
+    subgraph P5 [Phase 5: Critical Fixes]
+        T5_1[P5-T1: Dashboard 실제 구현]
+        T5_2[P5-T2: Header 로그아웃 연결]
+        T5_3[P5-T3: API 키 보안 처리]
     end
 
-    subgraph P1 [Phase 1: Auth & Common]
-        R1[P1-R1: Auth Resource]
-        S0[P1-S0: 공통 레이아웃]
-        S1[P1-S1: 로그인]
-        S2[P1-S2: 회원가입]
+    subgraph P6 [Phase 6: Auth & UX 강화]
+        T6_1[P6-T1: Google OAuth 구현]
+        T6_2[P6-T2: 비밀번호 변경 API]
+        T6_3[P6-T3: 계정 삭제 API]
+        T6_4[P6-T4: Auth 미들웨어 강화]
     end
 
-    subgraph P2 [Phase 2: Team Management]
-        R2_1[P2-R1: Teams]
-        R2_2[P2-R2: Agents]
-        R2_3[P2-R3: Templates]
-        R2_4[P2-R4: Dashboard Stats]
-        S2_1[P2-S1: 홈 조직도]
-        S2_2[P2-S2: 팀 상세]
-        S2_3[P2-S3: 팀 생성]
+    subgraph P7 [Phase 7: Frontend 품질]
+        T7_1[P7-T1: 프론트엔드 테스트]
+        T7_2[P7-T2: Error Boundary]
+        T7_3[P7-T3: Loading Skeleton]
+        T7_4[P7-T4: SEO & Metadata]
     end
 
-    subgraph P3 [Phase 3: Task Execution]
-        R3_1[P3-R1: Tasks]
-        R3_2[P3-R2: Task Results]
-        R3_3[P3-R3: Task Logs + WS]
-        S3_1[P3-S1: 작업 요청]
-        S3_2[P3-S2: 실시간 모니터링]
-        S3_3[P3-S3: 결과물 미리보기]
+    subgraph P8 [Phase 8: 기능 완성]
+        T8_1[P8-T1: 검색 기능]
+        T8_2[P8-T2: 알림 시스템]
+        T8_3[P8-T3: 파일 업로드/다운로드]
+        T8_4[P8-T4: Settings 서버 저장]
     end
 
-    subgraph P4 [Phase 4: Additional]
-        S4_1[P4-S1: 작업 이력]
-        S4_2[P4-S2: 설정]
+    subgraph P9 [Phase 9: 배포 준비]
+        T9_1[P9-T1: Docker 통합 테스트]
+        T9_2[P9-T2: 환경변수 분리]
+        T9_3[P9-T3: CI/CD 파이프라인]
+        T9_4[P9-T4: 프로덕션 보안]
     end
 
-    T01 --> T02 & T03 & T04
-    T02 & T03 & T04 --> R1
-    R1 --> S0
-    S0 --> S1 & S2
-
-    R1 --> R2_1 & R2_2 & R2_3 & R2_4
-    R2_1 & R2_4 --> S2_1
-    R2_1 & R2_2 --> S2_2
-    R2_3 --> S2_3
-
-    R2_1 --> R3_1
-    R3_1 --> R3_2 & R3_3
-    R2_1 & R2_2 --> S3_1
-    R3_1 & R3_3 --> S3_2
-    R3_1 & R3_2 --> S3_3
-
-    R3_1 --> S4_1
-    R1 --> S4_2
+    T5_1 & T5_2 & T5_3 --> T6_1 & T6_2 & T6_3
+    T6_2 & T6_3 --> T6_4
+    T5_1 --> T7_1 & T7_2 & T7_3
+    T7_1 & T7_2 & T7_3 --> T7_4
+    T6_4 --> T8_1 & T8_2 & T8_3 & T8_4
+    T7_4 & T8_1 & T8_2 & T8_3 & T8_4 --> T9_1
+    T9_1 --> T9_2 --> T9_3 --> T9_4
 ```
 
 ---
 
-# Phase 0: Project Setup
+# Phase 5: Critical Fixes (핵심 수정)
 
-## [x] P0-T0.1: 프로젝트 초기화
+## [x] P5-T1: Dashboard 실제 UI 구현
 - **담당**: frontend-specialist
-- **파일**: `package.json`, `docker-compose.yml`, `.env.example`
-- **스펙**: 모노레포 구조 생성, Docker Compose 설정 (PostgreSQL 16, Redis), 환경변수 설정
+- **현황**: `/dashboard` 페이지가 `/teams/new`로 무조건 리다이렉트 중 (실제 대시보드 UI 없음)
+- **파일**: `frontend/src/app/(main)/dashboard/page.tsx` (현재 5줄: redirect만 존재)
+- **스펙**:
+  - 기존 TASKS.md P2-S1-T1 명세대로 구현:
+    - StatsSummary: 오늘의 요약 카드 (진행중/완료/전체 팀) → `GET /api/v1/dashboard/stats`
+    - TeamOrgChart: React Flow 기반 팀 조직도 → `GET /api/v1/teams`
+    - CreateTeamButton: 새 팀 만들기 버튼
+  - 팀이 없을 때만 `/teams/new`로 안내 (빈 상태 처리)
+  - 팀이 있으면 통계 + 조직도 표시
+- **API 의존**: `GET /api/v1/dashboard/stats`, `GET /api/v1/teams` (이미 구현됨)
 - **완료 조건**:
-  - [x] `docker-compose up` 으로 DB/Redis 기동
-  - [x] `.env.example` 작성
+  - [ ] 로그인 후 `/dashboard` 접속 시 통계 카드 3개 표시
+  - [ ] React Flow 조직도에 팀 노드 표시
+  - [ ] 팀 노드 클릭 시 `/teams/:id` 이동
+  - [ ] 팀 없을 때 빈 상태 + 팀 생성 안내
 
-## [x] P0-T0.2: Frontend 초기화
+## [x] P5-T2: Header 로그아웃 기능 연결
 - **담당**: frontend-specialist
-- **파일**: `frontend/package.json`, `frontend/next.config.ts`, `frontend/tailwind.config.ts`
-- **스펙**: Next.js 15 (App Router), Tailwind CSS, shadcn/ui, Zustand 설치 및 설정
-- **의존**: P0-T0.1
+- **현황**: `Header.tsx:30` - `// TODO: 로그아웃 로직 구현` (auth store 미연결)
+- **파일**: `frontend/src/components/layout/Header.tsx`
+- **스펙**:
+  - `useAuthStore`의 `logout()` 호출 연결
+  - 로그아웃 시 토큰 제거 + `/login` 리다이렉트
+  - 현재 사용자 이름/이메일 Avatar에 표시
 - **완료 조건**:
-  - [x] `npm run dev` 로 Next.js 실행
-  - [x] shadcn/ui 컴포넌트 사용 가능
-  - [x] TypeScript strict mode
+  - [ ] 로그아웃 클릭 시 토큰 제거 확인
+  - [ ] `/login`으로 리다이렉트 확인
+  - [ ] Avatar에 사용자 이니셜 표시
 
-## [x] P0-T0.3: Backend 초기화
+## [x] P5-T3: API 키 보안 처리
 - **담당**: backend-specialist
-- **파일**: `backend/app/main.py`, `backend/requirements.txt`, `backend/pyproject.toml`
-- **스펙**: FastAPI, SQLAlchemy 2.0, Celery + Redis, uvicorn 설정
-- **의존**: P0-T0.1
+- **현황**: `.env`에 실제 OpenAI API 키가 평문 저장됨 (git에 커밋되지 않았지만 위험)
+- **파일**: `.env`, `.gitignore`, `backend/app/core/config.py`
+- **스펙**:
+  - `.env`가 `.gitignore`에 포함 확인
+  - `backend/.env.example`에 실제 키 없음 확인 (이미 수정됨)
+  - API 키 없이도 서버 기동 가능하도록 graceful 처리 (AI 기능만 비활성화)
 - **완료 조건**:
-  - [x] `uvicorn app.main:app` 으로 서버 실행
-  - [x] `/docs` 에서 Swagger UI 확인
-  - [x] Python type hints 설정
+  - [ ] `.gitignore`에 `.env` 패턴 포함
+  - [ ] API 키 없이 서버 시작 시 에러 없이 기동
+  - [ ] AI 관련 엔드포인트만 "API key not configured" 응답
 
-## [x] P0-T0.4: DB 초기화
-- **담당**: database-specialist
-- **파일**: `backend/alembic/`, `backend/app/models/`
-- **스펙**: Alembic 마이그레이션 설정, SQLAlchemy 모델 정의 (users, teams, agents, tasks, task_results, task_logs, team_templates), 인덱스 생성
-- **의존**: P0-T0.1
+---
+
+# Phase 6: Auth & UX 강화
+
+## [ ] P6-T1: Google OAuth 로그인 구현
+- **담당**: backend-specialist + frontend-specialist
+- **현황**: CLAUDE.md와 스펙에 Google OAuth 명시, 프론트엔드 로그인 페이지에 Google 버튼 UI 있지만 백엔드 미구현
+- **파일**:
+  - `backend/app/api/v1/auth.py` (OAuth 엔드포인트 추가)
+  - `backend/app/core/config.py` (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET)
+  - `frontend/src/app/(auth)/login/page.tsx` (Google 버튼 연결)
+- **스펙**:
+  - `GET /api/v1/auth/google` → Google OAuth redirect
+  - `GET /api/v1/auth/google/callback` → JWT 발급
+  - 기존 이메일 계정과 연동 (같은 이메일이면 병합)
+- **TDD**: RED → GREEN → REFACTOR
+- **의존**: P5-T3
 - **완료 조건**:
-  - [x] `alembic upgrade head` 로 스키마 생성
-  - [x] 7개 테이블 + 인덱스 생성 확인
-  - [x] 팀 템플릿 시드 데이터 입력
+  - [ ] Google 로그인 버튼 클릭 시 OAuth 플로우 시작
+  - [ ] Google 인증 후 JWT 발급 + `/dashboard` 이동
+  - [ ] 테스트 3개 이상 작성
 
----
-
-# Phase 1: Auth & Common
-
-## P1-R1: Auth Resource
-
-### [x] P1-R1-T1: Auth API 구현
+## [ ] P6-T2: 비밀번호 변경 API 구현
 - **담당**: backend-specialist
-- **리소스**: users
-- **엔드포인트**:
-  - POST /api/v1/auth/login (로그인)
-  - POST /api/v1/auth/signup (회원가입)
-  - GET /api/v1/users/me (내 정보)
-  - PUT /api/v1/users/me (정보 수정)
-- **필드**: id, email, password_hash, name, plan, api_usage_count
-- **인증**: JWT + OAuth2 (Google)
-- **파일**: `backend/tests/api/test_auth.py` → `backend/app/api/auth.py`
-- **스펙**: JWT 토큰 발급/검증, 비밀번호 해싱 (bcrypt), Google OAuth
-- **Worktree**: `worktree/phase-1-auth`
+- **현황**: 프론트엔드 `authService.changePassword()` 호출하지만 백엔드 엔드포인트 존재 여부 미확인
+- **파일**:
+  - `backend/app/api/v1/auth.py` (`POST /api/v1/auth/password/change`)
+  - `backend/tests/api/test_auth.py` (테스트 추가)
+- **스펙**:
+  - 현재 비밀번호 확인 + 새 비밀번호 설정
+  - 비밀번호 강도 검증 (최소 8자, 대소문자, 숫자)
 - **TDD**: RED → GREEN → REFACTOR
-- **병렬**: P1-S0-T1과 병렬 가능
+- **의존**: P5-T2
+- **완료 조건**:
+  - [ ] 비밀번호 변경 성공 테스트
+  - [ ] 잘못된 현재 비밀번호 → 403 응답 테스트
+  - [ ] 약한 비밀번호 → 422 응답 테스트
 
----
-
-## P1-S0: 공통 레이아웃
-
-### [x] P1-S0-T1: 공통 레이아웃 구현
-- **담당**: frontend-specialist
-- **화면**: 전체 (dashboard 레이아웃)
-- **컴포넌트**:
-  - SidebarNavigation (navigation) - 홈, 작업 이력, 새 팀 만들기, 설정
-  - Header (navigation) - 검색, 알림, 프로필 메뉴
-- **파일**: `frontend/tests/components/Layout.test.tsx` → `frontend/components/layout/DashboardLayout.tsx`
-- **스펙**: 반응형 사이드바 (240px, 접기 가능), 헤더, 라우트 하이라이트
-- **Worktree**: `worktree/phase-1-layout`
-- **TDD**: RED → GREEN → REFACTOR
-- **데모**: `/demo/phase-1/s0-layout`
-- **데모 상태**: desktop, tablet, mobile
-- **병렬**: P1-R1-T1과 병렬 가능
-
----
-
-## P1-S1: 로그인 화면
-
-> 화면: /login
-> 데이터 요구: users
-
-### [x] P1-S1-T1: 로그인 UI 구현
-- **담당**: frontend-specialist
-- **화면**: /login
-- **컴포넌트**:
-  - LoginForm (form) - 이메일/비밀번호 입력, 로그인 버튼, Google 로그인
-  - SignupLink (navigation) - 회원가입 이동
-- **데이터 요구**: users (data_requirements 참조)
-- **파일**: `frontend/tests/pages/Login.test.tsx` → `frontend/app/(auth)/login/page.tsx`
-- **스펙**: 이메일/비밀번호 입력, 유효성 검사, JWT 저장, 로그인 후 /dashboard 이동
-- **Worktree**: `worktree/phase-1-auth`
-- **TDD**: RED → GREEN → REFACTOR
-- **데모**: `/demo/phase-1/s1-login`
-- **데모 상태**: normal, error, loading
-- **의존**: P1-R1-T1, P1-S0-T1
-
-### [x] P1-S1-T2: 로그인 통합 테스트
-- **담당**: test-specialist
-- **화면**: /login
-- **시나리오**:
-  | 이름 | When | Then |
-  |------|------|------|
-  | 로그인 성공 | 올바른 이메일/비밀번호 입력 | /dashboard 이동, JWT 저장 |
-  | 로그인 실패 | 잘못된 비밀번호 | 에러 메시지 표시 |
-  | 비인증 리다이렉트 | 비인증 상태로 /dashboard 접근 | /login으로 리다이렉트 |
-- **파일**: `frontend/tests/e2e/login.spec.ts`
-- **Worktree**: `worktree/phase-1-auth`
-
-### [x] P1-S1-V: 로그인 연결점 검증
-- **담당**: test-specialist
-- **화면**: /login
-- **검증 항목**:
-  - [x] Endpoint: POST /api/v1/auth/login 응답 정상
-  - [x] Navigation: LoginForm 성공 → /dashboard 라우트 존재
-  - [x] Navigation: SignupLink → /signup 라우트 존재
-  - [x] Auth: JWT 토큰 저장/갱신 동작
-
----
-
-## P1-S2: 회원가입 화면
-
-> 화면: /signup
-> 데이터 요구: users
-
-### [x] P1-S2-T1: 회원가입 UI 구현
-- **담당**: frontend-specialist
-- **화면**: /signup
-- **컴포넌트**:
-  - SignupForm (form) - 이메일/비밀번호/이름 입력
-  - LoginLink (navigation) - 로그인 이동
-- **데이터 요구**: users (data_requirements 참조)
-- **파일**: `frontend/tests/pages/Signup.test.tsx` → `frontend/app/(auth)/signup/page.tsx`
-- **스펙**: 입력 유효성 검사, 회원가입 후 /dashboard 이동
-- **Worktree**: `worktree/phase-1-auth`
-- **TDD**: RED → GREEN → REFACTOR
-- **데모**: `/demo/phase-1/s2-signup`
-- **데모 상태**: normal, error, loading
-- **의존**: P1-R1-T1, P1-S0-T1
-
-### [x] P1-S2-V: 회원가입 연결점 검증
-- **담당**: test-specialist
-- **화면**: /signup
-- **검증 항목**:
-  - [x] Endpoint: POST /api/v1/auth/register 응답 정상
-  - [x] Navigation: SignupForm 성공 → /dashboard 라우트 존재
-  - [x] Navigation: LoginLink → /login 라우트 존재
-
----
-
-# Phase 2: Team Management
-
-## Resource 태스크 (백엔드 독립)
-
-### P2-R1: Teams Resource
-
-#### [x] P2-R1-T1: Teams API 구현
+## [ ] P6-T3: 계정 삭제 API 구현
 - **담당**: backend-specialist
-- **리소스**: teams
-- **엔드포인트**:
-  - GET /api/v1/teams (팀 목록)
-  - GET /api/v1/teams/{id} (팀 상세)
-  - POST /api/v1/teams (팀 생성)
-  - PUT /api/v1/teams/{id} (팀 수정)
-  - DELETE /api/v1/teams/{id} (팀 삭제)
-- **필드**: id, user_id, name, description, template_id, config, status, agent_count, recent_task_count
-- **인증**: 필수 (JWT)
-- **파일**: `backend/tests/api/test_teams.py` → `backend/app/api/teams.py`
-- **스펙**: 팀 CRUD, 사용자별 필터링, computed fields (agent_count, recent_task_count)
-- **Worktree**: `worktree/phase-2-resources`
+- **현황**: 프론트엔드 `authService.deleteAccount()` → `DELETE /api/v1/users/me` 호출, 백엔드 구현 확인 필요
+- **파일**:
+  - `backend/app/api/v1/users.py` (DELETE 엔드포인트)
+  - `backend/tests/api/test_auth.py` (테스트 추가)
+- **스펙**:
+  - Soft delete (is_active=false) 또는 Hard delete + cascade
+  - 관련 팀/작업 처리 정책 결정
 - **TDD**: RED → GREEN → REFACTOR
-- **병렬**: P2-R2-T1, P2-R3-T1, P2-R4-T1과 병렬 가능
+- **의존**: P5-T2
+- **완료 조건**:
+  - [ ] 계정 삭제 성공 테스트
+  - [ ] 삭제 후 로그인 불가 테스트
+  - [ ] 관련 데이터 처리 확인
 
-### P2-R2: Agents Resource
-
-#### [x] P2-R2-T1: Agents API 구현
+## [ ] P6-T4: Auth 미들웨어 강화
 - **담당**: backend-specialist
-- **리소스**: agents
-- **엔드포인트**:
-  - GET /api/v1/teams/{team_id}/agents (에이전트 목록)
-  - POST /api/v1/teams/{team_id}/agents (에이전트 추가)
-  - PUT /api/v1/agents/{id} (에이전트 수정)
-  - DELETE /api/v1/agents/{id} (에이전트 삭제)
-- **필드**: id, team_id, name, role, layer, model, prompt_template, tools, sort_order, status
-- **인증**: 필수 (JWT)
-- **파일**: `backend/tests/api/test_agents.py` → `backend/app/api/agents.py`
-- **스펙**: 에이전트 CRUD, 팀별 필터링, layer별 정렬, 모델 선택 (opus/sonnet/haiku)
-- **Worktree**: `worktree/phase-2-resources`
+- **현황**: JWT 기본 인증만 구현, rate limiting/refresh token 미구현
+- **파일**:
+  - `backend/app/core/security.py`
+  - `backend/app/core/deps.py`
+- **스펙**:
+  - Rate limiting (로그인 시도 5회/분)
+  - JWT refresh token 메커니즘
+  - Token blacklist (로그아웃 시)
 - **TDD**: RED → GREEN → REFACTOR
-- **병렬**: P2-R1-T1, P2-R3-T1, P2-R4-T1과 병렬 가능
+- **의존**: P6-T2, P6-T3
+- **완료 조건**:
+  - [ ] Rate limiting 동작 테스트
+  - [ ] Refresh token 발급/갱신 테스트
+  - [ ] 로그아웃 후 기존 토큰 무효화 테스트
 
-### P2-R3: Team Templates Resource
+---
 
-#### [x] P2-R3-T1: Team Templates API 구현
+# Phase 7: Frontend 품질 강화
+
+## [ ] P7-T1: 프론트엔드 테스트 작성
+- **담당**: test-specialist
+- **현황**: 프론트엔드 테스트 파일 0개 (백엔드 141개 대비)
+- **파일**: `frontend/src/__tests__/` (신규 생성)
+- **스펙**:
+  - Vitest + React Testing Library 설정
+  - 핵심 컴포넌트 단위 테스트:
+    - Auth store (login/logout/register)
+    - Header component
+    - Sidebar component
+    - Login/Signup forms
+  - API service 모킹 테스트:
+    - authService
+    - teams/tasks/agents services
+- **의존**: P5-T1
+- **완료 조건**:
+  - [ ] vitest.config.ts 설정
+  - [ ] 최소 15개 테스트 작성
+  - [ ] `npm run test` 전체 통과
+  - [ ] 핵심 컴포넌트 커버리지 80%+
+
+## [ ] P7-T2: React Error Boundary 구현
+- **담당**: frontend-specialist
+- **현황**: Error Boundary 미구현 - API 에러 시 흰 화면 가능
+- **파일**:
+  - `frontend/src/components/ErrorBoundary.tsx` (신규)
+  - `frontend/src/app/(main)/layout.tsx` (래핑)
+- **스펙**:
+  - 전역 Error Boundary 컴포넌트
+  - 사용자 친화적 에러 페이지 (재시도 버튼)
+  - 에러 로깅 (console에 상세 정보)
+- **의존**: P5-T1
+- **완료 조건**:
+  - [ ] API 에러 시 에러 페이지 표시
+  - [ ] "다시 시도" 버튼 동작
+  - [ ] 에러 정보 콘솔 로깅
+
+## [ ] P7-T3: Loading Skeleton 컴포넌트
+- **담당**: frontend-specialist
+- **현황**: 데이터 로딩 시 빈 화면 또는 기본 스피너만 표시
+- **파일**:
+  - `frontend/src/components/ui/skeleton.tsx` (shadcn 이미 있을 수 있음)
+  - 각 주요 페이지에 Skeleton 적용
+- **스펙**:
+  - Dashboard: 통계 카드 + 조직도 스켈레톤
+  - Team Detail: 팀 정보 + 에이전트 목록 스켈레톤
+  - Task History: 테이블 행 스켈레톤
+  - Settings: 프로필 섹션 스켈레톤
+- **의존**: P5-T1
+- **완료 조건**:
+  - [ ] 각 페이지 최초 로딩 시 스켈레톤 표시
+  - [ ] 데이터 로드 완료 시 실제 콘텐츠로 전환
+  - [ ] Neo-brutalism 스타일 일관성
+
+## [ ] P7-T4: SEO & Metadata 설정
+- **담당**: frontend-specialist
+- **현황**: 기본 Next.js metadata만 존재, 커스텀 favicon/OG 없음
+- **파일**:
+  - `frontend/src/app/layout.tsx` (metadata)
+  - `frontend/public/favicon.ico` (신규)
+  - 각 페이지별 metadata export
+- **스펙**:
+  - 커스텀 favicon + apple-touch-icon
+  - 페이지별 title/description
+  - OG 태그 (공유용)
+  - robots.txt
+- **의존**: P7-T1, P7-T2, P7-T3
+- **완료 조건**:
+  - [ ] 커스텀 favicon 표시
+  - [ ] 각 페이지 title이 고유함
+  - [ ] `<head>` 태그에 OG 메타데이터 포함
+
+---
+
+# Phase 8: 기능 완성
+
+## [ ] P8-T1: 검색 기능 구현
+- **담당**: backend-specialist + frontend-specialist
+- **현황**: Header에 검색 UI 존재하지만 실제 검색 기능 없음 (상태만 관리)
+- **파일**:
+  - `backend/app/api/v1/` (검색 엔드포인트 - 기존 API 쿼리 파라미터 활용)
+  - `frontend/src/components/layout/Header.tsx` (검색 연결)
+  - `frontend/src/components/search/SearchResults.tsx` (신규)
+- **스펙**:
+  - 통합 검색: 팀 이름, 작업 유형, 에이전트 이름으로 검색
+  - `GET /api/v1/teams?search=keyword`
+  - `GET /api/v1/tasks?search=keyword`
+  - 검색 결과 드롭다운 표시
+  - 디바운스 처리 (300ms)
+- **의존**: P6-T4
+- **완료 조건**:
+  - [ ] 검색어 입력 시 결과 드롭다운 표시
+  - [ ] 팀/작업 결과 클릭 시 해당 페이지 이동
+  - [ ] 빈 결과 처리
+
+## [ ] P8-T2: 알림 시스템 구현
+- **담당**: backend-specialist + frontend-specialist
+- **현황**: Header에 Bell 아이콘 + 빨간 점만 있고 실제 알림 시스템 없음
+- **파일**:
+  - `backend/app/models/notification.py` (신규 모델)
+  - `backend/app/api/v1/notifications.py` (신규 엔드포인트)
+  - `frontend/src/components/layout/NotificationPanel.tsx` (신규)
+- **스펙**:
+  - 작업 완료/실패 시 알림 생성
+  - `GET /api/v1/notifications` (목록)
+  - `PATCH /api/v1/notifications/{id}/read` (읽음 처리)
+  - 헤더에 미읽은 알림 개수 뱃지
+  - 클릭 시 알림 드롭다운 패널
+- **TDD**: RED → GREEN → REFACTOR
+- **의존**: P6-T4
+- **완료 조건**:
+  - [ ] 작업 완료 시 알림 자동 생성
+  - [ ] 미읽은 알림 개수 뱃지 표시
+  - [ ] 알림 클릭 시 해당 작업 페이지 이동
+  - [ ] 전체 읽음 처리
+
+## [ ] P8-T3: 파일 업로드/다운로드 구현
 - **담당**: backend-specialist
-- **리소스**: team_templates
-- **엔드포인트**:
-  - GET /api/v1/templates (템플릿 목록)
-- **필드**: id, name, description, category, icon, default_agents, is_active
-- **파일**: `backend/tests/api/test_templates.py` → `backend/app/api/templates.py`
-- **스펙**: 팀 템플릿 목록 조회, 카테고리별 필터링
-- **Worktree**: `worktree/phase-2-resources`
+- **현황**: 작업 요청 UI에 파일 업로드 참조, 결과물에 ZIP 다운로드 참조, 실제 파일 처리 미구현
+- **파일**:
+  - `backend/app/api/v1/tasks.py` (파일 업로드 엔드포인트)
+  - `backend/app/api/v1/task_results.py` (ZIP 다운로드)
+  - `backend/app/services/storage.py` (신규 - 파일 저장 서비스)
+- **스펙**:
+  - `POST /api/v1/tasks/{task_id}/upload` - 파일 업로드 (PDF, 이미지, 텍스트)
+  - `GET /api/v1/tasks/{task_id}/results/download` - 결과물 ZIP 다운로드
+  - 로컬 스토리지 → S3 마이그레이션 가능 구조
+  - 파일 크기 제한 (10MB)
 - **TDD**: RED → GREEN → REFACTOR
-- **병렬**: P2-R1-T1, P2-R2-T1, P2-R4-T1과 병렬 가능
+- **의존**: P6-T4
+- **완료 조건**:
+  - [ ] PDF 파일 업로드 성공 테스트
+  - [ ] ZIP 다운로드 성공 테스트
+  - [ ] 파일 크기 초과 시 422 응답
 
-### P2-R4: Dashboard Stats Resource
+## [ ] P8-T4: Settings 서버 저장
+- **담당**: backend-specialist + frontend-specialist
+- **현황**: 알림 설정/API 키가 localStorage에만 저장 (서버 동기화 없음)
+- **파일**:
+  - `backend/app/models/user.py` (preferences 필드 추가)
+  - `backend/app/api/v1/users.py` (preferences 엔드포인트)
+  - `frontend/src/app/(main)/settings/page.tsx` (서버 저장 연결)
+- **스펙**:
+  - `PATCH /api/v1/users/me/preferences` - 사용자 설정 저장
+  - 알림 설정 서버 저장
+  - API 키는 암호화 저장 (서버사이드)
+  - 설정 변경 시 즉시 동기화
+- **TDD**: RED → GREEN → REFACTOR
+- **의존**: P6-T4
+- **완료 조건**:
+  - [ ] 알림 토글 변경 → 서버 저장 확인
+  - [ ] 다른 브라우저에서 로그인 시 설정 동기화
+  - [ ] API 키 암호화 저장 확인
 
-#### [x] P2-R4-T1: Dashboard Stats API 구현
+---
+
+# Phase 9: 배포 준비
+
+## [ ] P9-T1: Docker 통합 테스트
 - **담당**: backend-specialist
-- **리소스**: dashboard_stats
-- **엔드포인트**:
-  - GET /api/v1/dashboard/stats (대시보드 통계)
-- **필드**: running_tasks, completed_tasks_today, total_teams
-- **인증**: 필수 (JWT)
-- **파일**: `backend/tests/api/test_dashboard.py` → `backend/app/api/dashboard.py`
-- **스펙**: 사용자별 통계 집계 (진행중 작업, 오늘 완료, 전체 팀 수)
-- **Worktree**: `worktree/phase-2-resources`
-- **TDD**: RED → GREEN → REFACTOR
-- **병렬**: P2-R1-T1, P2-R2-T1, P2-R3-T1과 병렬 가능
+- **현황**: `docker-compose.yml` 존재하지만 실제 빌드/실행 미검증
+- **파일**:
+  - `docker-compose.yml` (6개 서비스: db, redis, backend, celery-worker, frontend, nginx)
+  - `backend/Dockerfile`
+  - `frontend/Dockerfile`
+  - `nginx/nginx.conf`
+  - `backend/entrypoint.sh`
+- **스펙**:
+  - `docker compose build` 성공 확인
+  - `docker compose up` 전체 서비스 기동 확인
+  - PostgreSQL 마이그레이션 자동 실행 (`alembic upgrade head`)
+  - nginx 리버스 프록시 동작 확인
+  - WebSocket 프록시 동작 확인
+  - 헬스체크 통과 확인
+- **의존**: P8-T1, P8-T2, P8-T3, P8-T4, P7-T4
+- **완료 조건**:
+  - [ ] `docker compose up --build` 전체 성공
+  - [ ] `http://localhost/api/v1/health` 응답 확인
+  - [ ] `http://localhost` 프론트엔드 로드 확인
+  - [ ] 회원가입 → 로그인 → 팀 생성 E2E 동작
 
----
-
-## Screen 태스크 (프론트엔드)
-
-### P2-S1: 홈 - 조직도 뷰 화면
-
-> 화면: /dashboard
-> 데이터 요구: teams, dashboard_stats
-
-#### [x] P2-S1-T1: 홈 조직도 UI 구현
-- **담당**: frontend-specialist
-- **화면**: /dashboard
-- **컴포넌트**:
-  - StatsSummary (stat-card) - 오늘의 요약 (진행중/완료/전체 팀)
-  - TeamOrgChart (chart) - 전체 팀 조직도 (React Flow)
-  - CreateTeamButton (button) - 새 팀 만들기
-- **데이터 요구**: teams, dashboard_stats (data_requirements 참조)
-- **파일**: `frontend/tests/pages/Dashboard.test.tsx` → `frontend/app/(main)/dashboard/page.tsx`
-- **스펙**: React Flow 기반 인터랙티브 조직도, 팀별 상태 색상, 줌/패닝, 빈 상태 처리
-- **Worktree**: `worktree/phase-2-dashboard`
-- **TDD**: RED → GREEN → REFACTOR
-- **데모**: `/demo/phase-2/s1-dashboard`
-- **데모 상태**: loading, error, empty, normal
-- **의존**: P2-R1-T1, P2-R4-T1
-
-#### [x] P2-S1-T2: 홈 통합 테스트
-- **담당**: test-specialist
-- **화면**: /dashboard
-- **시나리오**:
-  | 이름 | When | Then |
-  |------|------|------|
-  | 초기 로드 | /dashboard 접속 | 요약 카드 + 조직도 표시 |
-  | 팀 클릭 | 마케팅 팀 노드 클릭 | /teams/:id 이동 |
-  | 빈 상태 | 팀 없음 | 안내 메시지 + 생성 버튼 강조 |
-- **파일**: `frontend/tests/e2e/dashboard.spec.ts`
-- **Worktree**: `worktree/phase-2-dashboard`
-
-#### [x] P2-S1-V: 홈 연결점 검증
-- **담당**: test-specialist
-- **화면**: /dashboard
-- **검증 항목**:
-  - [x] Field Coverage: teams.[id,name,config,status,agent_count,recent_task_count] 존재
-  - [x] Field Coverage: dashboard_stats.[running_tasks,completed_tasks_today,total_teams] 존재
-  - [x] Endpoint: GET /api/v1/teams 응답 정상
-  - [x] Endpoint: GET /api/v1/dashboard/stats 응답 정상
-  - [x] Navigation: TeamOrgChart → /teams/:id 라우트 존재
-  - [x] Navigation: CreateTeamButton → /teams/new 라우트 존재
-
----
-
-### P2-S2: 팀 상세 화면
-
-> 화면: /teams/:id
-> 데이터 요구: teams, agents, tasks
-
-#### [x] P2-S2-T1: 팀 상세 UI 구현
-- **담당**: frontend-specialist
-- **화면**: /teams/:id
-- **컴포넌트**:
-  - TeamHeader (detail) - 팀 이름/설명/상태
-  - AgentOrgChart (chart) - 에이전트 계층 조직도 (layer별 색상)
-  - AgentDetailPanel (drawer) - 에이전트 상세 사이드 패널
-  - RecentTasksList (list) - 최근 작업 미니 리스트
-  - NewTaskButton (button) - 새 작업 요청
-- **데이터 요구**: teams, agents, tasks (data_requirements 참조)
-- **파일**: `frontend/tests/pages/TeamDetail.test.tsx` → `frontend/app/(main)/teams/[id]/page.tsx`
-- **스펙**: 에이전트 계층 조직도 (Orchestration/Research/Execution/Quality 색상), 에이전트 클릭 시 드로어
-- **Worktree**: `worktree/phase-2-teams`
-- **TDD**: RED → GREEN → REFACTOR
-- **데모**: `/demo/phase-2/s2-team-detail`
-- **데모 상태**: loading, error, normal
-- **의존**: P2-R1-T1, P2-R2-T1
-
-#### [x] P2-S2-T2: 팀 상세 통합 테스트
-- **담당**: test-specialist
-- **화면**: /teams/:id
-- **시나리오**:
-  | 이름 | When | Then |
-  |------|------|------|
-  | 초기 로드 | /teams/:id 접속 | 팀 정보 + 에이전트 조직도 표시 |
-  | 에이전트 클릭 | blog_writer 노드 클릭 | 사이드 패널 열림 |
-   | 새 작업 | "새 작업 요청" 클릭 | 버튼 disabled + Phase 3 안내 표시 |
-  | 팀 편집 | 팀 설정 클릭 | 편집 모달 표시 |
-- **파일**: `frontend/tests/e2e/team-detail.spec.ts`
-- **Worktree**: `worktree/phase-2-teams`
-
-#### [x] P2-S2-V: 팀 상세 연결점 검증
-- **담당**: test-specialist
-- **화면**: /teams/:id
-- **검증 항목**:
-  - [x] Field Coverage: teams.[id,name,description,config,status] 존재
-  - [x] Field Coverage: agents.[id,name,role,layer,model,status] 존재
-  - [x] Field Coverage: tasks 연동은 Phase 3로 deferred (placeholder/안내 문구 적용)
-  - [x] Endpoint: GET /api/v1/teams/{id} 응답 정상
-  - [x] Endpoint: GET /api/v1/teams/{team_id}/agents 응답 정상
-  - [x] Navigation: NewTaskButton은 Phase 3까지 disabled 상태 유지
-  - [x] Navigation: RecentTasksList는 Phase 3까지 placeholder 상태 유지
-
----
-
-### P2-S3: 팀 생성 화면
-
-> 화면: /teams/new
-> 데이터 요구: team_templates
-
-#### [x] P2-S3-T1: 팀 생성 UI 구현
-- **담당**: frontend-specialist
-- **화면**: /teams/new
-- **컴포넌트**:
-  - StepIndicator (stepper) - 3단계 (템플릿 선택 / 커스터마이즈 / 확인)
-  - TemplateGrid (grid) - 팀 템플릿 카드 그리드
-  - CustomizeForm (form) - 팀 이름/설명 + 에이전트 편집
-  - ConfirmSummary (detail) - 최종 요약 + 생성 버튼
-- **데이터 요구**: team_templates (data_requirements 참조)
-- **파일**: `frontend/tests/pages/TeamCreate.test.tsx` → `frontend/app/(main)/teams/new/page.tsx`
-- **스펙**: 3단계 위저드, 템플릿 기반 팀 생성, 에이전트 추가/삭제/수정, 프롬프트 편집
-- **Worktree**: `worktree/phase-2-teams`
-- **TDD**: RED → GREEN → REFACTOR
-- **데모**: `/demo/phase-2/s3-team-create`
-- **데모 상태**: step1, step2, step3, loading
-- **의존**: P2-R3-T1
-
-#### [x] P2-S3-T2: 팀 생성 통합 테스트
-- **담당**: test-specialist
-- **화면**: /teams/new
-- **시나리오**:
-  | 이름 | When | Then |
-  |------|------|------|
-  | 템플릿 선택 | 마케팅 팀 클릭 | Step 2, 에이전트 5명 표시 |
-  | 에이전트 편집 | 에이전트 추가 클릭 | 새 에이전트 행 추가 |
-  | 팀 생성 완료 | Step 3 "팀 생성" 클릭 | /dashboard 이동 |
-  | 프롬프트 편집 | 에이전트 편집 아이콘 클릭 | 편집 모달 표시 |
-- **파일**: `frontend/tests/e2e/team-create.spec.ts`
-- **Worktree**: `worktree/phase-2-teams`
-
-#### [x] P2-S3-V: 팀 생성 연결점 검증
-- **담당**: test-specialist
-- **화면**: /teams/new
-- **검증 항목**:
-  - [x] Field Coverage: team_templates.[id,name,description,category,icon,default_agents] 존재
-  - [x] Endpoint: GET /api/v1/templates 응답 정상
-  - [x] Endpoint: POST /api/v1/teams 응답 정상
-  - [x] Endpoint: POST /api/v1/teams/{team_id}/agents 응답 정상
-  - [x] Navigation: ConfirmSummary 성공 → /dashboard 라우트 존재
-
----
-
-# Phase 3: Task Execution
-
-## Resource 태스크 (백엔드 독립)
-
-### P3-R1: Tasks Resource
-
-#### [x] P3-R1-T1: Tasks API 구현
+## [ ] P9-T2: 환경변수 분리
 - **담당**: backend-specialist
-- **리소스**: tasks
-- **엔드포인트**:
-  - GET /api/v1/tasks (작업 목록 - 필터/페이지네이션)
-  - GET /api/v1/tasks/{id} (작업 상세)
-  - POST /api/v1/teams/{team_id}/tasks (작업 생성)
-  - PUT /api/v1/tasks/{id}/cancel (작업 취소)
-- **필드**: id, team_id, user_id, type, input, options, status, progress, started_at, completed_at, team_name, duration
-- **인증**: 필수 (JWT)
-- **파일**: `backend/tests/api/test_tasks.py` → `backend/app/api/tasks.py`
-- **스펙**: 작업 CRUD, 상태 관리 (pending→running→completed/failed/cancelled), 팀별/상태별/날짜별 필터링, Celery 큐 연동
-- **Worktree**: `worktree/phase-3-resources`
-- **TDD**: RED → GREEN → REFACTOR
-- **병렬**: P3-R2-T1, P3-R3-T1과 병렬 가능 (기본 Tasks 모델 완료 후)
+- **현황**: `.env` 하나로 dev/prod 혼재, Docker 전용 변수와 로컬 변수 혼재
+- **파일**:
+  - `.env.development` (신규)
+  - `.env.production` (신규)
+  - `.env.docker` (신규)
+  - `docker-compose.yml` (env_file 수정)
+- **스펙**:
+  - 개발: SQLite + 로컬 Redis
+  - Docker: PostgreSQL + Redis (컨테이너)
+  - 프로덕션: 외부 DB + Redis + 실제 API 키
+  - 환경별 CORS 설정 분리
+- **의존**: P9-T1
+- **완료 조건**:
+  - [ ] 환경별 `.env` 파일 분리
+  - [ ] 각 환경에서 서버 정상 기동
+  - [ ] README에 환경 설정 가이드
 
-### P3-R2: Task Results Resource
-
-#### [x] P3-R2-T1: Task Results API 구현
+## [ ] P9-T3: CI/CD 파이프라인
 - **담당**: backend-specialist
-- **리소스**: task_results
-- **엔드포인트**:
-  - GET /api/v1/tasks/{task_id}/results (결과물 목록)
-  - GET /api/v1/tasks/{task_id}/results/{id}/download (다운로드)
-- **필드**: id, task_id, agent_id, result_type, content, file_url, metadata, quality_score, version
-- **인증**: 필수 (JWT)
-- **파일**: `backend/tests/api/test_task_results.py` → `backend/app/api/task_results.py`
-- **스펙**: 결과물 조회, result_type별 필터링, 파일 다운로드 (개별/ZIP), 수정 버전 관리
-- **Worktree**: `worktree/phase-3-resources`
-- **TDD**: RED → GREEN → REFACTOR
-- **병렬**: P3-R1-T1 완료 후, P3-R3-T1과 병렬 가능
+- **현황**: CI/CD 설정 없음
+- **파일**:
+  - `.github/workflows/ci.yml` (신규)
+  - `.github/workflows/deploy.yml` (신규)
+- **스펙**:
+  - CI: lint + type check + backend tests + frontend build
+  - PR 생성 시 자동 실행
+  - main 머지 시 Docker 이미지 빌드
+- **의존**: P9-T2
+- **완료 조건**:
+  - [ ] PR 생성 시 CI 자동 실행
+  - [ ] 백엔드 테스트 141개 통과
+  - [ ] 프론트엔드 빌드 성공
 
-### P3-R3: Task Logs + WebSocket Resource
-
-#### [x] P3-R3-T1: Task Logs API + WebSocket 구현
+## [ ] P9-T4: 프로덕션 보안 강화
 - **담당**: backend-specialist
-- **리소스**: task_logs
-- **엔드포인트**:
-  - GET /api/v1/tasks/{task_id}/logs (로그 목록)
-  - WS /ws/tasks/{task_id} (실시간 스트리밍)
-- **필드**: id, task_id, agent_id, status, message, progress
-- **인증**: 필수 (JWT, WebSocket 토큰)
-- **파일**: `backend/tests/api/test_task_logs.py` → `backend/app/api/ws.py`
-- **스펙**: 에이전트별 로그 조회, WebSocket 실시간 진행률/상태 스트리밍, 연결 끊김 재연결
-- **Worktree**: `worktree/phase-3-resources`
-- **TDD**: RED → GREEN → REFACTOR
-- **병렬**: P3-R1-T1 완료 후, P3-R2-T1과 병렬 가능
+- **현황**: 개발 환경 기본값 사용 중 (`SECRET_KEY=change-me-in-production`)
+- **파일**:
+  - `backend/app/core/config.py`
+  - `backend/app/main.py`
+  - `docker-compose.yml`
+- **스펙**:
+  - SECRET_KEY 강제 변경 체크 (production에서 기본값 사용 시 에러)
+  - CORS origins 제한 (production에서 `*` 금지)
+  - HTTPS 강제 (production)
+  - SQL injection 방어 확인 (SQLAlchemy ORM 사용으로 기본 방어)
+  - 보안 헤더 추가 (X-Frame-Options, CSP 등)
+- **의존**: P9-T3
+- **완료 조건**:
+  - [ ] production 모드에서 기본 SECRET_KEY 사용 시 서버 시작 거부
+  - [ ] 보안 헤더 응답 확인
+  - [ ] OWASP Top 10 기본 점검 통과
 
 ---
 
-## Screen 태스크 (프론트엔드)
+# Phase Summary (v2)
 
-### P3-S1: 작업 요청 화면
-
-> 화면: /teams/:id/tasks/new
-> 데이터 요구: teams, agents
-
-#### [x] P3-S1-T1: 작업 요청 UI 구현
-- **담당**: frontend-specialist
-- **화면**: /teams/:id/tasks/new
-- **컴포넌트**:
-  - StepIndicator (stepper) - 3단계 (옵션 선택 / 입력 / 확인)
-  - Step1Options (form) - 팀별 맞춤 옵션 (체크박스/라디오)
-  - Step2Input (form) - URL/텍스트/파일 업로드 + 추가 지시사항
-  - Step3Confirm (detail) - 옵션 요약 + 실행 버튼
-- **데이터 요구**: teams, agents (data_requirements 참조)
-- **파일**: `frontend/tests/pages/TaskRequest.test.tsx` → `frontend/app/(main)/teams/[id]/tasks/new/page.tsx`
-- **스펙**: 3단계 위저드, 팀별 동적 옵션, URL 유효성 검사, 파일 업로드, 요약 확인 후 실행
-- **Worktree**: `worktree/phase-3-task-flow`
-- **TDD**: RED → GREEN → REFACTOR
-- **데모**: `/demo/phase-3/s1-task-request`
-- **데모 상태**: step1, step2-url, step2-file, step3, loading
-- **의존**: P2-R1-T1, P2-R2-T1, P3-R1-T1
-
-#### [x] P3-S1-T2: 작업 요청 통합 테스트
-- **담당**: test-specialist
-- **화면**: /teams/:id/tasks/new
-- **시나리오**:
-  | 이름 | When | Then |
-  |------|------|------|
-  | 단계별 진행 | Step 1 선택 후 다음 | Step 2 표시 |
-  | URL 입력 실행 | YouTube URL 입력 + 실행 | /tasks/:id/monitor 이동 |
-  | 파일 업로드 | PDF 업로드 | 미리보기 표시 |
-  | 옵션 요약 | Step 3 도달 | 모든 옵션 요약 표시 |
-- **파일**: `frontend/tests/e2e/task-request.spec.ts`
-- **Worktree**: `worktree/phase-3-task-flow`
-
-#### [x] P3-S1-V: 작업 요청 연결점 검증
-- **담당**: test-specialist
-- **화면**: /teams/:id/tasks/new
-- **검증 항목**:
-  - [x] Field Coverage: teams.[id,name,config] 존재
-  - [x] Field Coverage: agents.[id,name,role] 존재
-  - [x] Endpoint: POST /api/v1/teams/{team_id}/tasks 응답 정상
-  - [x] Navigation: Step3Confirm 실행 → /tasks/:id/monitor 라우트 존재
+| Phase | 태스크 수 | 설명 |
+|-------|----------|------|
+| P5 | 3 | Critical Fixes (대시보드, 로그아웃, API 키) |
+| P6 | 4 | Auth & UX 강화 (OAuth, 비밀번호, 계정삭제, 미들웨어) |
+| P7 | 4 | Frontend 품질 (테스트, Error Boundary, Skeleton, SEO) |
+| P8 | 4 | 기능 완성 (검색, 알림, 파일, 설정 동기화) |
+| P9 | 4 | 배포 준비 (Docker, 환경분리, CI/CD, 보안) |
+| **합계** | **19** | |
 
 ---
 
-### P3-S2: 실시간 모니터링 화면
+# 이전 완료 태스크 (v1: Phase 0-4, 45/45 완료)
 
-> 화면: /tasks/:id/monitor
-> 데이터 요구: tasks, agents, task_logs
+<details>
+<summary>Phase 0-4 완료 내역 (접기/펼치기)</summary>
 
-#### [x] P3-S2-T1: 실시간 모니터링 UI 구현
-- **담당**: frontend-specialist
-- **화면**: /tasks/:id/monitor
-- **컴포넌트**:
-  - OverallProgress (stat-card) - 전체 진행률 바
-  - AgentStatusGrid (grid) - 에이전트별 상태 카드 (이름, 상태 아이콘, 메시지, 진행률)
-  - LogStream (list) - 실시간 로그 스트림 (접기/펼치기)
-  - CancelButton (button) - 작업 취소
-  - ViewResultsButton (button) - 결과물 보기 (완료 시 활성화)
-- **데이터 요구**: tasks, agents, task_logs (data_requirements 참조)
-- **파일**: `frontend/tests/pages/TaskMonitor.test.tsx` → `frontend/app/(main)/tasks/[id]/monitor/page.tsx`
-- **스펙**: WebSocket 실시간 업데이트, 에이전트 상태 색상 (🟢작업중/🟡대기/✅완료/🔴오류), 진행률 애니메이션, 완료 시 결과 버튼 활성화
-- **Worktree**: `worktree/phase-3-task-flow`
-- **TDD**: RED → GREEN → REFACTOR
-- **데모**: `/demo/phase-3/s2-task-monitor`
-- **데모 상태**: running, partial-complete, all-complete, error
-- **의존**: P3-R1-T1, P3-R3-T1
+- **Phase 0** (4/4): 프로젝트 초기화, Frontend/Backend/DB 셋업
+- **Phase 1** (8/8): Auth API, 공통 레이아웃, 로그인/회원가입 UI + 테스트
+- **Phase 2** (16/16): Teams/Agents/Templates/Dashboard API + 조직도/팀상세/팀생성 UI
+- **Phase 3** (15/15): Tasks/Results/Logs API + WebSocket + AI Service + Celery Worker + 모니터링/결과 UI
+- **Phase 4** (4/4): 작업 이력 + 설정 UI
 
-#### [x] P3-S2-T2: 실시간 모니터링 통합 테스트
-- **담당**: test-specialist
-- **화면**: /tasks/:id/monitor
-- **시나리오**:
-  | 이름 | When | Then |
-  |------|------|------|
-  | 실시간 업데이트 | WebSocket 상태 변경 수신 | 카드 상태/메시지 업데이트 |
-  | 작업 완료 | 모든 에이전트 완료 | "결과물 보기" 버튼 활성화 |
-  | 작업 취소 | 취소 버튼 + 확인 | 상태 cancelled 변경 |
-  | 오류 발생 | 에이전트 오류 상태 | 오류 아이콘/메시지 표시 |
-- **파일**: `frontend/tests/e2e/task-monitor.spec.ts`
-- **Worktree**: `worktree/phase-3-task-flow`
-
-#### [x] P3-S2-V: 실시간 모니터링 연결점 검증
-- **담당**: test-specialist
-- **화면**: /tasks/:id/monitor
-- **검증 항목**:
-  - [x] Field Coverage: tasks.[id,status,progress,team_id] 존재
-  - [x] Field Coverage: task_logs.[agent_id,status,message,progress] 존재
-  - [x] Endpoint: GET /api/v1/tasks/{id} 응답 정상
-  - [x] Endpoint: WS /ws/tasks/{task_id} 연결 정상
-  - [x] Navigation: ViewResultsButton → /tasks/:id/results 라우트 존재
-  - [x] Auth: WebSocket JWT 토큰 검증
-
----
-
-### P3-S3: 결과물 미리보기 화면
-
-> 화면: /tasks/:id/results
-> 데이터 요구: tasks, task_results
-
-#### [x] P3-S3-T1: 결과물 미리보기 UI 구현
-- **담당**: frontend-specialist
-- **화면**: /tasks/:id/results
-- **컴포넌트**:
-  - ResultTabs (tabs) - 결과물 유형별 탭 (블로그/SNS/뉴스레터)
-  - ResultContent (detail) - 텍스트 렌더링 + 파일 미리보기
-  - ResultMetadata (detail) - 메타데이터 (시간, 모델, 품질 점수)
-  - RevisionForm (form) - 수정 요청 입력
-  - DownloadAllButton (button) - 전체 다운로드
-- **데이터 요구**: tasks, task_results (data_requirements 참조)
-- **파일**: `frontend/tests/pages/TaskResults.test.tsx` → `frontend/app/(main)/tasks/[id]/results/page.tsx`
-- **스펙**: 유형별 탭, Markdown 렌더링, 수정 요청 → 재생성, ZIP 다운로드
-- **Worktree**: `worktree/phase-3-task-flow`
-- **TDD**: RED → GREEN → REFACTOR
-- **데모**: `/demo/phase-3/s3-task-results`
-- **데모 상태**: loading, normal-blog, normal-sns, revision
-- **의존**: P3-R1-T1, P3-R2-T1
-
-#### [x] P3-S3-T2: 결과물 미리보기 통합 테스트
-- **담당**: test-specialist
-- **화면**: /tasks/:id/results
-- **시나리오**:
-  | 이름 | When | Then |
-  |------|------|------|
-  | 초기 로드 | /tasks/:id/results 접속 | 유형별 탭 + 첫 번째 콘텐츠 표시 |
-  | 수정 요청 | 수정 입력 후 "수정 요청" 클릭 | 새 작업 생성, /tasks/:newId/monitor 이동 |
-  | 다운로드 | 전체 다운로드 클릭 | ZIP 다운로드 시작 |
-  | 품질 점수 | QA 결과 포함 | 품질 뱃지 표시 |
-- **파일**: `frontend/tests/e2e/task-results.spec.ts`
-- **Worktree**: `worktree/phase-3-task-flow`
-
-#### [x] P3-S3-V: 결과물 미리보기 연결점 검증
-- **담당**: test-specialist
-- **화면**: /tasks/:id/results
-- **검증 항목**:
-  - [x] Field Coverage: tasks.[id,type,status,created_at,completed_at] 존재
-  - [x] Field Coverage: task_results.[id,result_type,content,file_url,quality_score,version] 존재
-  - [x] Endpoint: GET /api/v1/tasks/{task_id}/results 응답 정상
-  - [x] Endpoint: GET /api/v1/tasks/{task_id}/results/{id}/download 응답 정상
-  - [x] Navigation: RevisionForm → /tasks/:id/monitor 라우트 존재
-
----
-
-# Phase 4: Additional Screens
-
-### P4-S1: 작업 이력 화면
-
-> 화면: /tasks/history
-> 데이터 요구: tasks, teams
-
-#### [x] P4-S1-T1: 작업 이력 UI 구현
-- **담당**: frontend-specialist
-- **화면**: /tasks/history
-- **컴포넌트**:
-  - FilterBar (filter-form) - 팀별/날짜/상태 필터
-  - TaskTable (table) - 작업 목록 (날짜, 팀, 유형, 상태, 소요 시간)
-  - Pagination (navigation) - 페이지네이션
-- **데이터 요구**: tasks, teams (data_requirements 참조)
-- **파일**: `frontend/src/__tests__/pages/task-history.test.tsx` → `frontend/src/app/(main)/tasks/history/page.tsx`
-- **스펙**: 필터링, 정렬, 페이지네이션, 행 클릭 시 결과물 이동
-- **Worktree**: `worktree/phase-4-additional`
-- **TDD**: RED → GREEN → REFACTOR
-- **데모**: `/demo/phase-4/s1-task-history`
-- **데모 상태**: loading, empty, normal, filtered
-- **의존**: P3-R1-T1
-
-#### [x] P4-S1-V: 작업 이력 연결점 검증
-- **담당**: test-specialist
-- **화면**: /tasks/history
-- **검증 항목**:
-  - [x] Field Coverage: tasks.[id,type,status,created_at,completed_at,team_name,duration] 존재
-  - [x] Endpoint: GET /api/v1/tasks (필터/페이지네이션) 응답 정상
-  - [x] Navigation: TaskTable 행 클릭 → /tasks/:id/results 라우트 존재
-
----
-
-### P4-S2: 설정 화면
-
-> 화면: /settings
-> 데이터 요구: users
-
-#### [x] P4-S2-T1: 설정 UI 구현
-- **담당**: frontend-specialist
-- **화면**: /settings
-- **컴포넌트**:
-  - ProfileSection (form) - 프로필 편집
-  - ApiKeySection (form) - Claude API 키 관리
-  - SubscriptionSection (detail) - 구독 관리
-  - NotificationSection (form) - 알림 설정
-  - DataManagementSection (detail) - 데이터 관리
-- **데이터 요구**: users (data_requirements 참조)
-- **파일**: `frontend/src/__tests__/pages/settings.test.tsx` → `frontend/src/app/(main)/settings/page.tsx`
-- **스펙**: 프로필 수정, API 키 마스킹 저장, 구독 플랜 표시, 알림 토글, 이력 내보내기/삭제
-- **Worktree**: `worktree/phase-4-additional`
-- **TDD**: RED → GREEN → REFACTOR
-- **데모**: `/demo/phase-4/s2-settings`
-- **데모 상태**: normal, editing, saving
-- **의존**: P1-R1-T1
-
-#### [x] P4-S2-V: 설정 연결점 검증
-- **담당**: test-specialist
-- **화면**: /settings
-- **검증 항목**:
-  - [x] Field Coverage: users.[id,email,name,plan,api_usage_count] 존재
-  - [x] Endpoint: GET /api/v1/users/me 응답 정상
-  - [x] Endpoint: PUT /api/v1/users/me 응답 정상
-
----
-
-# Phase Summary
-
-| Phase | Resource 태스크 | Screen 태스크 | 검증 태스크 | 합계 |
-|-------|---------------|-------------|-----------|------|
-| P0 | - | - | - | 4 |
-| P1 | 1 | 3 (layout + 2) | 2 | 6 |
-| P2 | 4 | 3 | 3 | 16 |
-| P3 | 3 | 3 | 3 | 15 |
-| P4 | - | 2 | 2 | 4 |
-| **합계** | **8** | **11** | **10** | **45** |
-
----
-
-# AI Service Integration (Phase 3 추가)
-
-### [x] P3-AI-T1: Claude API 연동 서비스 구현
-- **담당**: backend-specialist
-- **파일**: `backend/tests/services/test_ai_service.py` → `backend/app/services/ai_service.py`
-- **스펙**: Claude API (Anthropic SDK) 연동, 에이전트별 프롬프트 실행, 모델 라우팅 (opus/sonnet/haiku), 스트리밍 응답, 에러 핸들링
-- **Worktree**: `worktree/phase-3-resources`
-- **TDD**: RED → GREEN → REFACTOR
-
-### [x] P3-AI-T2: Celery 작업 워커 구현
-- **담당**: backend-specialist
-- **파일**: `backend/tests/workers/test_task_worker.py` → `backend/app/workers/task_worker.py`
-- **스펙**: Celery 태스크 정의, 에이전트 순차/병렬 실행, 진행률 업데이트 (WebSocket), 에러 복구, 작업 취소 처리
-- **Worktree**: `worktree/phase-3-resources`
-- **TDD**: RED → GREEN → REFACTOR
-- **의존**: P3-AI-T1, P3-R3-T1
+</details>

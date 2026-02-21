@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/stores/auth';
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -24,11 +25,18 @@ interface HeaderProps {
 
 export function Header({ onMenuClick }: HeaderProps) {
   const router = useRouter();
+  const { user, logout } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleLogout = () => {
-    // TODO: 로그아웃 로직 구현
-    router.push('/auth/login');
+  const handleLogout = async () => {
+    await logout();
+    router.push('/login');
+  };
+
+  // Get user initials for avatar
+  const getUserInitial = () => {
+    if (!user?.name) return null;
+    return user.name.charAt(0).toUpperCase();
   };
 
   return (
@@ -80,15 +88,26 @@ export function Header({ onMenuClick }: HeaderProps) {
                 aria-label="프로필 메뉴"
               >
                 <Avatar>
-                  <AvatarImage src="" alt="사용자" />
+                  <AvatarImage src="" alt={user?.name || '사용자'} />
                   <AvatarFallback className="bg-accent text-foreground font-bold">
-                    <User className="h-4 w-4" />
+                    {getUserInitial() || <User className="h-4 w-4" />}
                   </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>내 계정</DropdownMenuLabel>
+              <DropdownMenuLabel>
+                {user ? (
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">{user.name}</p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user.email}
+                    </p>
+                  </div>
+                ) : (
+                  '내 계정'
+                )}
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => router.push('/settings')}
