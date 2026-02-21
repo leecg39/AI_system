@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { SettingsSkeleton } from "@/components/skeletons/SettingsSkeleton";
 import { listTasks } from "@/services/tasks";
-import { getCurrentUserProfile, updateCurrentUserProfile } from "@/services/users";
+import { getCurrentUserProfile, updateCurrentUserProfile, getUserPreferences, updateUserPreferences } from "@/services/users";
 import type { UserProfile } from "@/types/user";
 
 interface NotificationSettings {
@@ -14,7 +14,6 @@ interface NotificationSettings {
 }
 
 const API_KEY_STORAGE_KEY = "clabs.settings.apiKey";
-const NOTIFICATION_STORAGE_KEY = "clabs.settings.notifications";
 
 const DEFAULT_NOTIFICATIONS: NotificationSettings = {
   taskCompleted: true,
@@ -63,6 +62,8 @@ export default function SettingsPage() {
   const [notificationNotice, setNotificationNotice] = useState<string | null>(null);
   const [dataNotice, setDataNotice] = useState<string | null>(null);
 
+  const notificationSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
@@ -72,31 +73,6 @@ export default function SettingsPage() {
     if (savedApiKey && savedApiKey.length > 0) {
       setApiKeyMasked(maskApiKey(savedApiKey));
     }
-
-    const rawNotifications = window.localStorage.getItem(NOTIFICATION_STORAGE_KEY);
-    if (!rawNotifications) {
-      return;
-    }
-
-    try {
-      const parsed = JSON.parse(rawNotifications) as Partial<NotificationSettings>;
-      setNotifications({
-        taskCompleted:
-          typeof parsed.taskCompleted === "boolean"
-            ? parsed.taskCompleted
-            : DEFAULT_NOTIFICATIONS.taskCompleted,
-        errorAlert:
-          typeof parsed.errorAlert === "boolean"
-            ? parsed.errorAlert
-            : DEFAULT_NOTIFICATIONS.errorAlert,
-        weeklyReport:
-          typeof parsed.weeklyReport === "boolean"
-            ? parsed.weeklyReport
-            : DEFAULT_NOTIFICATIONS.weeklyReport,
-      });
-    } catch {
-      setNotifications(DEFAULT_NOTIFICATIONS);
-    }
   }, []);
 
   const loadProfile = useCallback(async () => {
@@ -104,9 +80,20 @@ export default function SettingsPage() {
     setError(null);
 
     try {
-      const profile = await getCurrentUserProfile();
+      const [profile, prefs] = await Promise.all([
+        getCurrentUserProfile(),
+        getUserPreferences()
+      ]);
+
       setUser(profile);
       setNameInput(profile.name ?? "");
+
+      // Load server preferences
+      setNotifications({
+        taskCompleted: prefs.notifications.task_completed,
+        errorAlert: prefs.notifications.task_failed,
+        weeklyReport: false, // Not yet in backend
+      });
     } catch (fetchError) {
       const message = fetchError instanceof Error ? fetchError.message : "설정 정보를 불러오지 못했습니다.";
       setError(message);
@@ -181,21 +168,55 @@ export default function SettingsPage() {
     }
   };
 
-  const handleSaveNotifications = () => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
+  const handleSaveNotifications = async () => {
     setIsSavingNotifications(true);
     setNotificationNotice(null);
 
     try {
-      window.localStorage.setItem(NOTIFICATION_STORAGE_KEY, toJsonString(notifications));
+      await updateUserPreferences({
+        notifications: {
+          task_completed: notifications.taskCompleted,
+          task_failed: notifications.errorAlert,
+        }
+      });
       setNotificationNotice("알림 설정이 저장되었습니다.");
+    } catch (saveError) {
+      const message = saveError instanceof Error ? saveError.message : "알림 설정 저장에 실패했습니다.";
+      setNotificationNotice(message);
     } finally {
       setIsSavingNotifications(false);
     }
   };
+
+  // Auto-save notifications with debounce
+  useEffect(() => {
+    if (isLoading) {
+      return; // Skip during initial load
+    }
+
+    // Clear previous timeout
+    if (notificationSaveTimeoutRef.current) {
+      clearTimeout(notificationSaveTimeoutRef.current);
+    }
+
+    // Set new timeout for auto-save
+    notificationSaveTimeoutRef.current = setTimeout(() => {
+      void updateUserPreferences({
+        notifications: {
+          task_completed: notifications.taskCompleted,
+          task_failed: notifications.errorAlert,
+        }
+      }).catch((err) => {
+        console.error("Auto-save preferences failed:", err);
+      });
+    }, 500);
+
+    return () => {
+      if (notificationSaveTimeoutRef.current) {
+        clearTimeout(notificationSaveTimeoutRef.current);
+      }
+    };
+  }, [notifications.taskCompleted, notifications.errorAlert, isLoading]);
 
   const handleExportHistory = async () => {
     if (typeof window === "undefined") {

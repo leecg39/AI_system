@@ -3,7 +3,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Menu, Search, Bell, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,6 +18,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/auth';
+import { SearchResults } from '@/components/search/SearchResults';
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -27,6 +28,8 @@ export function Header({ onMenuClick }: HeaderProps) {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
+  const [showResults, setShowResults] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   const handleLogout = async () => {
     await logout();
@@ -38,6 +41,29 @@ export function Header({ onMenuClick }: HeaderProps) {
     if (!user?.name) return null;
     return user.name.charAt(0).toUpperCase();
   };
+
+  // Close search results when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowResults(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Show results when typing
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      setShowResults(true);
+    } else {
+      setShowResults(false);
+    }
+  }, [searchQuery]);
 
   return (
     <header className="h-16 border-b border-neo border-foreground bg-card shadow-neo-light">
@@ -54,7 +80,7 @@ export function Header({ onMenuClick }: HeaderProps) {
         </Button>
 
         {/* 검색 */}
-        <div className="relative flex-1 max-w-md">
+        <div ref={searchRef} className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
@@ -64,6 +90,15 @@ export function Header({ onMenuClick }: HeaderProps) {
             onChange={(e) => setSearchQuery(e.target.value)}
             aria-label="검색"
           />
+          {showResults && (
+            <SearchResults
+              query={searchQuery}
+              onClose={() => {
+                setShowResults(false);
+                setSearchQuery('');
+              }}
+            />
+          )}
         </div>
 
         {/* 오른쪽 영역 */}

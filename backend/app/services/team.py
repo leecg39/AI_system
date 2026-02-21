@@ -32,14 +32,20 @@ async def create_team(
 
 
 async def list_teams_by_user(
-    db: AsyncSession, user_id: str
+    db: AsyncSession, user_id: str, search: Optional[str] = None
 ) -> List[Team]:
-    """Return all teams owned by the given user."""
-    result = await db.execute(
-        select(Team)
-        .where(Team.user_id == user_id)
-        .order_by(Team.created_at.desc())
-    )
+    """Return all teams owned by the given user, optionally filtered by search."""
+    query = select(Team).where(Team.user_id == user_id)
+
+    if search:
+        search_pattern = f"%{search}%"
+        query = query.where(
+            (Team.name.ilike(search_pattern)) |
+            (Team.description.ilike(search_pattern))
+        )
+
+    query = query.order_by(Team.created_at.desc())
+    result = await db.execute(query)
     return list(result.scalars().all())
 
 

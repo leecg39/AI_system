@@ -2,10 +2,18 @@ from logging.config import fileConfig
 import asyncio
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.ext.compiler import compiles
 from alembic import context
 from app.db.base import Base
 from app.core.config import settings
 from app.models import *  # noqa: F401, F403
+
+
+# SQLite compatibility: compile JSONB as JSON
+@compiles(JSONB, "sqlite")
+def _compile_jsonb_sqlite(type_, compiler, **kw):
+    return "JSON"
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)

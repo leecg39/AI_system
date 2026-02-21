@@ -455,3 +455,175 @@ class TestDeleteTeam:
         response = await client.delete(f"/api/v1/teams/{sample_team.id}")
 
         assert response.status_code == 401
+
+
+# ---------------------------------------------------------------------------
+# GET /api/v1/teams?search=query  (Search Teams)
+# ---------------------------------------------------------------------------
+
+class TestSearchTeams:
+    """Tests for GET /api/v1/teams with search parameter."""
+
+    @pytest.mark.anyio
+    async def test_search_teams_by_name(
+        self, client, auth_headers, db_session, test_user
+    ):
+        """Search teams by name returns matching results."""
+        # Create teams with different names
+        team1 = Team(
+            id=str(uuid.uuid4()),
+            user_id=test_user.id,
+            name="Marketing Team",
+            description="Marketing dept",
+            config={},
+            status="active",
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        )
+        team2 = Team(
+            id=str(uuid.uuid4()),
+            user_id=test_user.id,
+            name="Sales Team",
+            description="Sales dept",
+            config={},
+            status="active",
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        )
+        team3 = Team(
+            id=str(uuid.uuid4()),
+            user_id=test_user.id,
+            name="Development Team",
+            description="Dev dept",
+            config={},
+            status="active",
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        )
+        db_session.add_all([team1, team2, team3])
+        await db_session.commit()
+
+        response = await client.get(
+            "/api/v1/teams?search=marketing", headers=auth_headers
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["total"] == 1
+        assert len(data["teams"]) == 1
+        assert data["teams"][0]["name"] == "Marketing Team"
+
+    @pytest.mark.anyio
+    async def test_search_teams_by_description(
+        self, client, auth_headers, db_session, test_user
+    ):
+        """Search teams by description returns matching results."""
+        team1 = Team(
+            id=str(uuid.uuid4()),
+            user_id=test_user.id,
+            name="Team Alpha",
+            description="Customer support team",
+            config={},
+            status="active",
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        )
+        team2 = Team(
+            id=str(uuid.uuid4()),
+            user_id=test_user.id,
+            name="Team Beta",
+            description="Product development",
+            config={},
+            status="active",
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        )
+        db_session.add_all([team1, team2])
+        await db_session.commit()
+
+        response = await client.get(
+            "/api/v1/teams?search=support", headers=auth_headers
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["total"] == 1
+        assert data["teams"][0]["name"] == "Team Alpha"
+
+    @pytest.mark.anyio
+    async def test_search_teams_case_insensitive(
+        self, client, auth_headers, db_session, test_user
+    ):
+        """Search is case insensitive."""
+        team = Team(
+            id=str(uuid.uuid4()),
+            user_id=test_user.id,
+            name="Analytics Team",
+            description="Data analysis",
+            config={},
+            status="active",
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        )
+        db_session.add(team)
+        await db_session.commit()
+
+        response = await client.get(
+            "/api/v1/teams?search=ANALYTICS", headers=auth_headers
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["total"] == 1
+        assert data["teams"][0]["name"] == "Analytics Team"
+
+    @pytest.mark.anyio
+    async def test_search_teams_no_results(
+        self, client, auth_headers, db_session, test_user
+    ):
+        """Search with no matches returns empty list."""
+        team = Team(
+            id=str(uuid.uuid4()),
+            user_id=test_user.id,
+            name="Engineering Team",
+            description="Software engineering",
+            config={},
+            status="active",
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        )
+        db_session.add(team)
+        await db_session.commit()
+
+        response = await client.get(
+            "/api/v1/teams?search=nonexistent", headers=auth_headers
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["total"] == 0
+        assert data["teams"] == []
+
+    @pytest.mark.anyio
+    async def test_search_teams_empty_query(
+        self, client, auth_headers, db_session, test_user
+    ):
+        """Search with empty string returns all teams."""
+        team = Team(
+            id=str(uuid.uuid4()),
+            user_id=test_user.id,
+            name="Test Team",
+            description="Test",
+            config={},
+            status="active",
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        )
+        db_session.add(team)
+        await db_session.commit()
+
+        response = await client.get("/api/v1/teams?search=", headers=auth_headers)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["total"] == 1

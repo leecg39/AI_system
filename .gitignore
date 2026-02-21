@@ -39,3 +39,6 @@ tmp/
 temp/
 dev.db
 *.png
+
+# Uploads
+backend/uploads/

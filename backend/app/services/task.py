@@ -53,6 +53,9 @@ def _build_conditions(user_id: str, filters: TaskListFilters) -> List[ColumnElem
         conditions.append(Task.created_at >= filters.created_from)
     if filters.created_to is not None:
         conditions.append(Task.created_at <= filters.created_to)
+    if filters.search is not None:
+        search_pattern = f"%{filters.search}%"
+        conditions.append(Task.type.ilike(search_pattern))
 
     return conditions
 
