@@ -5,6 +5,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 from sqlalchemy import String, DateTime, Integer
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 from app.db.base import Base
 import uuid
@@ -31,6 +32,7 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     plan: Mapped[str] = mapped_column(String(50), default=PlanEnum.FREE, nullable=False)
     api_usage_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    preferences: Mapped[dict] = mapped_column(JSONB, default=dict, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, nullable=False
     )

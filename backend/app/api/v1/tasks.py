@@ -1,13 +1,14 @@
 from datetime import datetime
 from typing import Annotated, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import CurrentUser
 from app.db.session import get_db
 from app.models.task import TaskStatusEnum
 from app.schemas.task import TaskCreate, TaskListFilters, TaskListResponse, TaskResponse
+from app.services.storage import storage
 from app.services.task import (
     cancel_task,
     create_task,
@@ -49,6 +50,7 @@ async def list_tasks_endpoint(
     task_type: Annotated[Optional[str], Query(alias="type")] = None,
     created_from: Annotated[Optional[datetime], Query()] = None,
     created_to: Annotated[Optional[datetime], Query()] = None,
+    search: Annotated[Optional[str], Query()] = None,
     page: Annotated[int, Query(ge=1)] = 1,
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
 ):
@@ -58,6 +60,7 @@ async def list_tasks_endpoint(
         type=task_type,
         created_from=created_from,
         created_to=created_to,
+        search=search,
         page=page,
         limit=limit,
     )
@@ -105,3 +108,41 @@ async def cancel_task_endpoint(
 
     cancelled = await cancel_task(db, task)
     return to_task_response(cancelled, team_name)
+
+
+@router.post("/tasks/{task_id}/upload")
+async def upload_file_endpoint(
+    task_id: str,
+    file: Annotated[UploadFile, File()],
+    current_user: CurrentUser,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Upload a file to a task.
+
+    Args:
+        task_id: ID of the task
+        file: The file to upload
+        current_user: Current authenticated user
+        db: Database session
+
+    Returns:
+        File metadata (filename, size, path)
+
+    Raises:
+        HTTPException: 404 if task not found, 403 if not authorized,
+                      422 if file too large or invalid extension
+    """
+    row = await get_task_with_team_name(db, task_id)
+    if row is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+
+    task, _ = row
+    if task.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to upload files to this task",
+        )
+
+    # Save file using storage service
+    file_metadata = await storage.save_file(file, task_id)
+    return file_metadata

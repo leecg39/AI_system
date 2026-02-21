@@ -23,6 +23,7 @@ from app.db.session import get_db
 from app.main import app
 from app.models.user import User
 from app.models.team import Team
+from app.models.notification import Notification  # noqa: F401
 
 
 # ---------------------------------------------------------------------------
@@ -130,6 +131,7 @@ async def test_user(db_session: AsyncSession) -> User:
         name=TEST_USER_NAME,
         plan="free",
         api_usage_count=0,
+        preferences={},
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow(),
     )
@@ -179,6 +181,7 @@ async def test_team_other_user(db_session: AsyncSession) -> Team:
         name="Other User",
         plan="free",
         api_usage_count=0,
+        preferences={},
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow(),
     )

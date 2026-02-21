@@ -30,6 +30,7 @@ async def lifespan(app: FastAPI):
         import app.models.task_result  # noqa: F401
         import app.models.task_log  # noqa: F401
         import app.models.team_template  # noqa: F401
+        import app.models.notification  # noqa: F401
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         logger.info("SQLite tables created for dev mode")

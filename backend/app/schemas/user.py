@@ -32,3 +32,26 @@ class UserResponse(UserBase):
 
 class UserInDB(UserResponse):
     password_hash: str
+
+
+class NotificationPreferences(BaseModel):
+    """Notification preferences schema."""
+    task_completed: bool = True
+    task_failed: bool = True
+
+
+class UserPreferences(BaseModel):
+    """User preferences schema."""
+    notifications: NotificationPreferences = NotificationPreferences()
+    theme: str = "light"
+
+
+class UserPreferencesUpdate(BaseModel):
+    """User preferences update schema (partial updates allowed)."""
+    notifications: Optional[NotificationPreferences] = None
+    theme: Optional[str] = None
+
+
+class UserPreferencesResponse(UserPreferences):
+    """User preferences response schema."""
+    model_config = {"from_attributes": True}

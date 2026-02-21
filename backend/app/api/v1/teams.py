@@ -1,9 +1,9 @@
 # @TASK P2-R1-T1 - Teams API endpoints
 # @SPEC docs/planning/02-trd.md#teams-api
 """Teams CRUD endpoints with JWT authentication."""
-from typing import Annotated
+from typing import Annotated, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import CurrentUser
@@ -65,9 +65,10 @@ async def create_team_endpoint(
 async def list_teams_endpoint(
     current_user: CurrentUser,
     db: Annotated[AsyncSession, Depends(get_db)],
+    search: Annotated[Optional[str], Query()] = None,
 ):
     """List all teams for the authenticated user."""
-    teams = await list_teams_by_user(db, current_user.id)
+    teams = await list_teams_by_user(db, current_user.id, search)
     enriched = [await _enrich_team_response(db, t) for t in teams]
     return TeamListResponse(teams=enriched, total=len(enriched))
 

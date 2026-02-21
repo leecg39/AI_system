@@ -41,5 +41,6 @@ class TaskListFilters(BaseModel):
     type: Optional[str] = None
     created_from: Optional[datetime] = None
     created_to: Optional[datetime] = None
+    search: Optional[str] = None
     page: int = Field(default=1, ge=1)
     limit: int = Field(default=20, ge=1, le=100)

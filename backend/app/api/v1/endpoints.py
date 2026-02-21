@@ -7,6 +7,7 @@ from app.api.v1 import (
     agents,
     auth,
     dashboard,
+    notifications,
     task_logs,
     task_results,
     tasks,
@@ -26,3 +27,4 @@ api_v1_router.include_router(task_results.router)
 api_v1_router.include_router(task_logs.router)
 api_v1_router.include_router(templates.router)
 api_v1_router.include_router(agents.router)
+api_v1_router.include_router(notifications.router)

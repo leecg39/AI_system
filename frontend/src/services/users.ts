@@ -62,3 +62,43 @@ export async function updateCurrentUserProfile(input: UserProfileUpdateInput): P
 
   return response.json();
 }
+
+export interface UserPreferences {
+  notifications: {
+    task_completed: boolean;
+    task_failed: boolean;
+  };
+  theme: string;
+}
+
+export interface UserPreferencesUpdate {
+  notifications?: {
+    task_completed?: boolean;
+    task_failed?: boolean;
+  };
+  theme?: string;
+}
+
+export async function getUserPreferences(): Promise<UserPreferences> {
+  const response = await fetchWithAuth("/api/v1/users/me/preferences");
+  if (!response.ok) {
+    const detail = await getErrorDetail(response, "Failed to load user preferences");
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+export async function updateUserPreferences(input: UserPreferencesUpdate): Promise<UserPreferences> {
+  const response = await fetchWithAuth("/api/v1/users/me/preferences", {
+    method: "PATCH",
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    const detail = await getErrorDetail(response, "Failed to update user preferences");
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
