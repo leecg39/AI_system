@@ -333,7 +333,7 @@ flowchart TD
 
 # Phase 9: 배포 준비
 
-## [ ] P9-T1: Docker 통합 테스트
+## [SKIP] P9-T1: Docker 통합 테스트 (Docker 미설치)
 - **담당**: backend-specialist
 - **현황**: `docker-compose.yml` 존재하지만 실제 빌드/실행 미검증
 - **파일**:
@@ -356,7 +356,7 @@ flowchart TD
   - [ ] `http://localhost` 프론트엔드 로드 확인
   - [ ] 회원가입 → 로그인 → 팀 생성 E2E 동작
 
-## [ ] P9-T2: 환경변수 분리
+## [x] P9-T2: 환경변수 분리
 - **담당**: backend-specialist
 - **현황**: `.env` 하나로 dev/prod 혼재, Docker 전용 변수와 로컬 변수 혼재
 - **파일**:
@@ -375,7 +375,7 @@ flowchart TD
   - [ ] 각 환경에서 서버 정상 기동
   - [ ] README에 환경 설정 가이드
 
-## [ ] P9-T3: CI/CD 파이프라인
+## [x] P9-T3: CI/CD 파이프라인
 - **담당**: backend-specialist
 - **현황**: CI/CD 설정 없음
 - **파일**:
@@ -391,7 +391,7 @@ flowchart TD
   - [ ] 백엔드 테스트 141개 통과
   - [ ] 프론트엔드 빌드 성공
 
-## [ ] P9-T4: 프로덕션 보안 강화
+## [x] P9-T4: 프로덕션 보안 강화
 - **담당**: backend-specialist
 - **현황**: 개발 환경 기본값 사용 중 (`SECRET_KEY=change-me-in-production`)
 - **파일**:
