@@ -1,0 +1,15 @@
+# robots.txt for AI Agent Team Platform
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow API routes
+Disallow: /api/
+
+# Disallow auth pages (no need to index login/signup)
+Disallow: /login
+Disallow: /signup
+
+# Sitemap (can be added later if needed)
+# Sitemap: https://yourdomain.com/sitemap.xml

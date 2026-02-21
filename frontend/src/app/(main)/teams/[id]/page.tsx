@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { TeamDetailSkeleton } from "@/components/skeletons/TeamDetailSkeleton";
 import { AgentDetailPanel } from "@/components/teams/AgentDetailPanel";
 import { AgentOrgChart } from "@/components/teams/AgentOrgChart";
 import { NewTaskButton } from "@/components/teams/NewTaskButton";
@@ -89,12 +90,7 @@ export default function TeamDetailPage({ params }: TeamDetailPageProps) {
   }, [agents, selectedAgentId]);
 
   if (isLoading) {
-    return (
-      <div className="space-y-3 py-8" data-testid="team-detail-loading">
-        <h1 className="text-3xl font-black text-foreground">팀 상세</h1>
-        <p className="text-muted-foreground">팀 정보를 불러오는 중...</p>
-      </div>
-    );
+    return <TeamDetailSkeleton />;
   }
 
   if (error || !team) {
