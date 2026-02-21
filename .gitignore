@@ -42,3 +42,11 @@ dev.db
 
 # Uploads
 backend/uploads/
+
+# Environment files (do not commit)
+.env.development
+.env.production
+.env.docker
+backend/.env.development
+backend/.env.production
+backend/.env
