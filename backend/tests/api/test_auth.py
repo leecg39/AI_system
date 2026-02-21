@@ -6,6 +6,7 @@
 Follows RED -> GREEN -> REFACTOR TDD cycle.
 """
 import pytest
+from tests.conftest import TEST_USER_EMAIL, TEST_USER_PASSWORD
 
 
 # ---------------------------------------------------------------------------
@@ -310,3 +311,65 @@ class TestPasswordChange:
         )
 
         assert response.status_code == 401
+
+
+# ---------------------------------------------------------------------------
+# DELETE /api/v1/users/me
+# ---------------------------------------------------------------------------
+
+class TestDeleteAccount:
+    """Tests for DELETE /api/v1/users/me."""
+
+    @pytest.mark.anyio
+    async def test_delete_account_success(self, client, test_user, auth_headers):
+        """Delete account returns 204 and user is deleted."""
+        response = await client.delete("/api/v1/users/me", headers=auth_headers)
+
+        assert response.status_code == 204
+
+    @pytest.mark.anyio
+    async def test_delete_account_cannot_login_after_deletion(
+        self, client, test_user, auth_headers
+    ):
+        """After deleting account, user cannot login."""
+        # Delete the account
+        delete_response = await client.delete("/api/v1/users/me", headers=auth_headers)
+        assert delete_response.status_code == 204
+
+        # Try to login with the deleted user's credentials
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            data={"username": TEST_USER_EMAIL, "password": TEST_USER_PASSWORD},
+        )
+        assert login_response.status_code == 401
+
+    @pytest.mark.anyio
+    async def test_delete_account_unauthenticated(self, client):
+        """Delete account without token returns 401."""
+        response = await client.delete("/api/v1/users/me")
+
+        assert response.status_code == 401
+
+    @pytest.mark.anyio
+    async def test_delete_account_cascades_to_teams(
+        self, client, test_user, test_team, auth_headers, db_session
+    ):
+        """Deleting account also deletes associated teams."""
+        from sqlalchemy import select
+        from app.models.team import Team
+
+        # Verify team exists
+        result = await db_session.execute(
+            select(Team).where(Team.id == test_team.id)
+        )
+        assert result.scalar_one_or_none() is not None
+
+        # Delete account
+        delete_response = await client.delete("/api/v1/users/me", headers=auth_headers)
+        assert delete_response.status_code == 204
+
+        # Verify team is also deleted
+        result = await db_session.execute(
+            select(Team).where(Team.id == test_team.id)
+        )
+        assert result.scalar_one_or_none() is None
