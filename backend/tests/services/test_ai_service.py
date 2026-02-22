@@ -77,14 +77,14 @@ class _FakeClient:
 
 
 def test_resolve_model_name_routes_supported_models() -> None:
-    assert resolve_model_name("opus") == "gpt-4o"
-    assert resolve_model_name("sonnet") == "gpt-4o"
-    assert resolve_model_name("haiku") == "gpt-4o-mini"
+    assert resolve_model_name("opus") == "gpt-5"
+    assert resolve_model_name("sonnet") == "gpt-5"
+    assert resolve_model_name("haiku") == "gpt-5"
 
 
 def test_resolve_model_name_falls_back_to_default() -> None:
-    assert resolve_model_name(None) == "gpt-4o"
-    assert resolve_model_name("unknown") == "gpt-4o"
+    assert resolve_model_name(None) == "gpt-5"
+    assert resolve_model_name("unknown") == "gpt-5"
 
 
 @pytest.mark.anyio
@@ -103,11 +103,11 @@ async def test_run_agent_prompt_uses_model_routing_and_returns_payload() -> None
     )
 
     assert response["content"] == "generated output"
-    assert response["model"] == "gpt-4o-mini"
+    assert response["model"] == "gpt-5"
     assert response["usage"] == {"input_tokens": 10, "output_tokens": 25}
 
     create_call = fake_client.chat.completions.create_calls[0]
-    assert create_call["model"] == "gpt-4o-mini"
+    assert create_call["model"] == "gpt-5"
     assert create_call["temperature"] == 0.3
     assert create_call["max_tokens"] == 128
     # Verify system message is first in messages list
@@ -150,7 +150,7 @@ async def test_stream_agent_prompt_yields_chunks() -> None:
 
     assert chunks == ["A", "B", "C"]
     stream_call = fake_client.chat.completions.create_calls[0]
-    assert stream_call["model"] == "gpt-4o"
+    assert stream_call["model"] == "gpt-5"
     assert stream_call["stream"] is True
 
 

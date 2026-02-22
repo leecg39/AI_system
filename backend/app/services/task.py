@@ -1,4 +1,5 @@
 from datetime import datetime
+import asyncio
 import logging
 import os
 from typing import List, Optional, Tuple
@@ -9,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.elements import ColumnElement
 
 from app.core.celery_app import celery_app
+from app.core.config import settings
 from app.models.task import Task, TaskStatusEnum
 from app.models.team import Team
 from app.models.user import User
@@ -120,6 +122,21 @@ async def create_task(
     return task
 
 
+def _run_task_in_background(task_id: str) -> None:
+    """Run task directly via asyncio when Celery/Redis is unavailable."""
+    from app.workers.task_worker import execute_task_async
+
+    async def _execute() -> None:
+        try:
+            await execute_task_async(task_id=task_id)
+        except Exception as exc:
+            logger.error("Background task %s failed: %s", task_id, exc)
+
+    loop = asyncio.get_event_loop()
+    loop.create_task(_execute())
+    logger.info("Task %s scheduled for direct background execution", task_id)
+
+
 def enqueue_task_execution(task_id: str) -> None:
     if os.getenv("PYTEST_CURRENT_TEST"):
         return
@@ -130,7 +147,10 @@ def enqueue_task_execution(task_id: str) -> None:
             args=[task_id],
         )
     except Exception as exc:
-        logger.warning("Failed to enqueue task %s: %s", task_id, exc)
+        logger.warning("Celery unavailable for task %s: %s", task_id, exc)
+        if settings.is_development:
+            logger.info("Falling back to direct async execution for task %s", task_id)
+            _run_task_in_background(task_id)
 
 
 async def list_tasks_by_user(

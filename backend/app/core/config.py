@@ -18,13 +18,13 @@ def _get_env_file() -> str:
     app_env = os.getenv("APP_ENV", "development")
 
     if app_env == "production":
-        return "../.env.production"
+        return ".env.production"
     elif app_env == "docker":
         # Docker containers get env vars from docker-compose
         return "../.env.docker"
     else:
         # Default to development
-        return "../.env.development"
+        return ".env.development"
 
 
 class Settings(BaseSettings):
@@ -56,6 +56,7 @@ class Settings(BaseSettings):
 
     # OpenAI API
     OPENAI_API_KEY: str = ""
+    OPENAI_BASE_URL: str = ""
 
     # CORS
     CORS_ORIGINS: list[str] = ["http://localhost:3000"]

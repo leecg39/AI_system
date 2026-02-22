@@ -90,24 +90,32 @@ async def _run_agent_inference(
     ai_service: AgentPromptRunner,
     task: Task,
     agent: Agent,
+    max_retries: int = 2,
 ) -> Dict[str, object]:
-    response = await ai_service.run_agent_prompt(
-        agent_name=agent.name,
-        agent_role=agent.role,
-        model=agent.model,
-        prompt_template=agent.prompt_template,
-        task_type=task.type,
-        input_data=task.input,
-        options=task.options,
-    )
-
-    return {
-        "agent_id": agent.id,
-        "agent_name": agent.name,
-        "model": str(response["model"]),
-        "content": str(response["content"]),
-        "usage": response.get("usage", {}),
-    }
+    last_error: Optional[Exception] = None
+    for attempt in range(max_retries + 1):
+        try:
+            response = await ai_service.run_agent_prompt(
+                agent_name=agent.name,
+                agent_role=agent.role,
+                model=agent.model,
+                prompt_template=agent.prompt_template,
+                task_type=task.type,
+                input_data=task.input,
+                options=task.options,
+            )
+            return {
+                "agent_id": agent.id,
+                "agent_name": agent.name,
+                "model": str(response["model"]),
+                "content": str(response["content"]),
+                "usage": response.get("usage", {}),
+            }
+        except Exception as exc:
+            last_error = exc
+            if attempt < max_retries:
+                await asyncio.sleep(2 * (attempt + 1))
+    raise last_error  # type: ignore[misc]
 
 
 async def _persist_agent_success(

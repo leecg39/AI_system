@@ -5,9 +5,9 @@ from typing import Optional
 from app.core.config import settings
 
 MODEL_ROUTING: dict[str, str] = {
-    "opus": "gpt-4o",
-    "sonnet": "gpt-4o",
-    "haiku": "gpt-4o-mini",
+    "opus": "gpt-5",
+    "sonnet": "gpt-5",
+    "haiku": "gpt-5",
 }
 
 
@@ -65,18 +65,21 @@ class AIService:
     def __init__(
         self,
         api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
         client: Optional[object] = None,
     ) -> None:
         resolved_key = api_key if api_key is not None else settings.OPENAI_API_KEY
+        resolved_base_url = base_url if base_url is not None else settings.OPENAI_BASE_URL
         self._client = client
         self._api_key = resolved_key
+        self._base_url = resolved_base_url if resolved_base_url else None
 
     @property
     def client(self) -> object:
         if self._client is not None:
             return self._client
 
-        if not self._api_key:
+        if not self._api_key and not self._base_url:
             raise AIServiceError("OPENAI_API_KEY is not configured")
 
         module = importlib.import_module("openai")
@@ -84,7 +87,11 @@ class AIService:
         if client_class is None:
             raise AIServiceError("openai.AsyncOpenAI is unavailable")
 
-        self._client = client_class(api_key=self._api_key)
+        kwargs = {"api_key": self._api_key or "chatmock"}
+        if self._base_url:
+            kwargs["base_url"] = self._base_url
+
+        self._client = client_class(**kwargs)
         return self._client
 
     async def run_agent_prompt(
